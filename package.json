@@ -14,5 +14,8 @@
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
     "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "underscore": "^1.9.1"
   }
 }
