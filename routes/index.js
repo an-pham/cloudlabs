@@ -6,20 +6,21 @@ var express = require('express');
 var router = express.Router();
 var AWS = require('aws-sdk');
 // var uuid = require('node-uuid');
+var s3 = new AWS.S3();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   // Load the SDK and UUID
 
-
   // import individual service
-  var s3 = new AWS.S3();
+  
 
   var params = {};
   var bucketList = {};
 
   // default region: us-east-2 when no region specified
   var regionList = {
+    "-": "Any",
     "us-east-2": "US East (Ohio)",
     "us-east-1": "US East (N. Virginia) ", //non location contraint required
     "us-west-1": "US West (N. California)",
@@ -73,10 +74,7 @@ router.get('/', function(req, res, next) {
   });
 
   console.log(bucketList);
-
-
 });
-
 
 
 module.exports = router;
