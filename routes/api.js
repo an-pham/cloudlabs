@@ -34,9 +34,7 @@ router.get('/buckets/:bname/:region', function(req, res) {
         if (err) console.log(err, err.stack); // an error occurred
         else {
             console.log(data); // successful response
-            res.json({
-                data: data
-            });
+            res.json({ data: data });
         }
         /*
         data = {
@@ -46,8 +44,17 @@ router.get('/buckets/:bname/:region', function(req, res) {
     });
 });
 
-router.get('/buckets', function(req, res) {
+router.delete('/buckets/:bucketName', function(req, res) {
+    var s3 = new AWS.S3();
+    var bucketName = req.params.bucketName;
 
+    s3.deleteBucket({ Bucket: bucketName }, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else {
+            console.log(data); // successful response
+            res.json({ data: "Bucket deleted successfully!" });
+        }
+    });
 });
 
 module.exports = router;
