@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
 
 });
 
-router.get('/bucket/:bname/:region', function(req, res) {
+router.get('/buckets/:bname/:region', function(req, res) {
     // list all bucket within region
     var region = req.params.region;
     var bucketName = (req.params.bname || "some-bucket-name") + uuid.v4();
@@ -44,6 +44,10 @@ router.get('/bucket/:bname/:region', function(req, res) {
         }
         */
     });
+});
+
+router.get('/buckets', function(req, res) {
+
 });
 
 module.exports = router;
