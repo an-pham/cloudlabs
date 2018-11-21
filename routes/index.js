@@ -82,10 +82,6 @@ router.get('/', function(req, res, next) {
             regionList: regionList
         });
     }
-
 });
-
-
-
 
 module.exports = router;

@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var AWS = require('aws-sdk');
+var uuid = require('uuid');
 
 var _ = require('underscore');
 
@@ -13,30 +14,35 @@ router.get('/', function(req, res) {
 
 });
 
-router.get('/region/:regionId', function(req, res) {
+router.get('/bucket/:bname/:region', function(req, res) {
     // list all bucket within region
-    var region = req.params.regionId;
-    var data = [];
+    var region = req.params.region;
+    var bucketName = (req.params.bname || "some-bucket-name") + uuid.v4();
+
+    // var data = [];
     var s3 = new AWS.S3({
         region: region
     });
 
-    // s3.buckets.limit(50).forEach (function (b) {
-    //     if (s3.getBucketLocation(bucket: b.name).location_constraint == region) {
-    //         data.push(b.name);
-    //     }
-    // });
-
-    s3.listBuckets(function(err, data) {
+    var params = {
+        Bucket: bucketName,
+        // CreateBucketConfiguration: {
+        //     LocationConstraint: region
+        // }
+    };
+    s3.createBucket(params, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
-        else  {
+        else {
             console.log(data); // successful response
-            data = data;
+            res.json({
+                data: data
+            });
         }
-    });
-
-    res.json({
-        data: data
+        /*
+        data = {
+         Location: "http://examplebucket.s3.amazonaws.com/"
+        }
+        */
     });
 });
 
