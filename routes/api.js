@@ -21,11 +21,11 @@ router.get('/region/:regionId', function(req, res) {
         region: region
     });
 
-    s3.buckets.limit(50).forEach (function (b) {
-        if (s3.getBucketLocation(bucket: b.name).location_constraint == region) {
-            data.push(b.name);
-        }
-    });
+    // s3.buckets.limit(50).forEach (function (b) {
+    //     if (s3.getBucketLocation(bucket: b.name).location_constraint == region) {
+    //         data.push(b.name);
+    //     }
+    // });
 
     s3.listBuckets(function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
