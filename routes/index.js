@@ -1,3 +1,7 @@
+/*
+  Reference: https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
+*/
+
 var express = require('express');
 var router = express.Router();
 var AWS = require('aws-sdk');
@@ -13,6 +17,26 @@ router.get('/', function(req, res, next) {
 
   var params = {};
   var bucketList = {};
+
+  // default region: us-east-2 when no region specified
+  var regionList = {
+    "us-east-2": "US East (Ohio)",
+    "us-east-1": "US East (N. Virginia) ", //non location contraint required
+    "us-west-1": "US West (N. California)",
+    "us-west-2": "US West (Oregon)",
+    "ap-south-1": "Asia Pacific (Mumbai)",
+    "ap-northeast-2": "Asia Pacific (Seoul)",
+    "ap-southeast-1": "Asia Pacific (Singapore)",
+    "ap-southeast-2": "Asia Pacific (Sydney)",
+    "ap-northeast-1": "Asia Pacific (Tokyo)",
+    "ca-central-1": "Canada (Central)",
+    "eu-central-1": "EU (Frankfurt)",
+    "eu-west-1": "EU (Ireland)",
+    "eu-west-2": "EU (London)",
+    "eu-west-3": "EU (Paris)",
+    "sa-east-1": "South America (São Paulo)"
+  };
+
   s3.listBuckets(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
     else {
@@ -20,7 +44,8 @@ router.get('/', function(req, res, next) {
       bucketList = data.Buckets;
       res.render('index', {
         title: 'Express',
-        bucketList: bucketList
+        bucketList: bucketList,
+        regionList: regionList
       });
     }
     /*
