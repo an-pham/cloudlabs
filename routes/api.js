@@ -57,4 +57,32 @@ router.delete('/buckets/:bucketName', function(req, res) {
     });
 });
 
+router.put('/buckets/:bucketName/:fileName', function(req, res) {
+    var urlParams = req.params;
+    var s3 = new AWS.S3({
+        apiVersion: '2006-03-01'
+    });
+
+    var params = {
+        // Body: "hahfak",
+        Bucket: urlParams.bucketName,
+        Key: urlParams.fileName
+    };
+    s3.putObject(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else {
+            console.log(data); // successful response
+            res.json({ data: "Bucket uploaded successfully!" });
+        }
+        /*
+        data = {
+         ETag: "\"6805f2cfc46c0f04559748bb039d69ae\"", 
+         VersionId: "Bvq0EDKxOcXLJXNo_Lkz37eM3R4pfzyQ"
+        }
+        */
+    });
+
+    // body...
+});
+
 module.exports = router;
