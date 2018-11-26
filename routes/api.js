@@ -27,35 +27,35 @@ router.get('/', function(req, res) {
 
 });
 
-// router.get('/buckets/:bname/:region', function(req, res) {
-//     // list all bucket within region
-//     var region = req.params.region;
-//     var bucketName = (req.params.bname || "some-bucket-name") + uuid.v4();
+router.get('/buckets/create/:bname/:region', function(req, res) {
+    // list all bucket within region
+    var region = req.params.region;
+    var bucketName = (req.params.bname || "some-bucket-name") + uuid.v4();
 
-//     // var data = [];
-//     var s3 = new AWS.S3({
-//         region: region
-//     });
+    // var data = [];
+    var s3 = new AWS.S3({
+        region: region
+    });
 
-//     var params = {
-//         Bucket: bucketName,
-//         // CreateBucketConfiguration: {
-//         //     LocationConstraint: region
-//         // }
-//     };
-//     s3.createBucket(params, function(err, data) {
-//         if (err) console.log(err, err.stack); // an error occurred
-//         else {
-//             console.log(data); // successful response
-//             res.json({ data: data });
-//         }
-//         /*
-//         data = {
-//          Location: "http://examplebucket.s3.amazonaws.com/"
-//         }
-//         */
-//     });
-// });
+    var params = {
+        Bucket: bucketName,
+        // CreateBucketConfiguration: {
+        //     LocationConstraint: region
+        // }
+    };
+    s3.createBucket(params, function(err, data) {
+        if (err) console.log(err, err.stack); // an error occurred
+        else {
+            console.log(data); // successful response
+            res.json({ data: data });
+        }
+        /*
+        data = {
+         Location: "http://examplebucket.s3.amazonaws.com/"
+        }
+        */
+    });
+});
 
 router.delete('/buckets/:bucketName', function(req, res) {
     var s3 = new AWS.S3();

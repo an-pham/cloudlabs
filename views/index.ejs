@@ -294,7 +294,7 @@
     // Create new bucket
     $("#create-bucket-btn").click(function() {
       console.log("clicked");
-      theurl = "/api/buckets/" + $("#bucket-name-inp").val().trim() + "/" + $("#bucket-region-inp option:selected").val().trim()
+      theurl = "/api/buckets/create/" + $("#bucket-name-inp").val().trim() + "/" + $("#bucket-region-inp option:selected").val().trim()
       $.ajax({
         url: theurl,
         success: function(result) {
