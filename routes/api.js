@@ -8,7 +8,17 @@ var _ = require('underscore');
 var app = express();
 var upload = multer({ dest: 'uploads/' });
 var fs = require('fs');
-// var s3 = new AWS.S3();
+
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+    path: 'logs/latency.csv',
+    header: [
+        {id: 'filename', title: 'FILE NAME'},
+        {id: 'size', title: 'FILE SIZE(B)'},
+        {id: 'download', title: 'DOWNLOAD TIME(ms)'},
+        {id: 'upload', title: 'UPLOAD TIME(ms)'}
+    ]
+});
 
 router.get('/', function(req, res) {
     res.json({
@@ -17,35 +27,35 @@ router.get('/', function(req, res) {
 
 });
 
-router.get('/buckets/:bname/:region', function(req, res) {
-    // list all bucket within region
-    var region = req.params.region;
-    var bucketName = (req.params.bname || "some-bucket-name") + uuid.v4();
+// router.get('/buckets/:bname/:region', function(req, res) {
+//     // list all bucket within region
+//     var region = req.params.region;
+//     var bucketName = (req.params.bname || "some-bucket-name") + uuid.v4();
 
-    // var data = [];
-    var s3 = new AWS.S3({
-        region: region
-    });
+//     // var data = [];
+//     var s3 = new AWS.S3({
+//         region: region
+//     });
 
-    var params = {
-        Bucket: bucketName,
-        // CreateBucketConfiguration: {
-        //     LocationConstraint: region
-        // }
-    };
-    s3.createBucket(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
-        else {
-            console.log(data); // successful response
-            res.json({ data: data });
-        }
-        /*
-        data = {
-         Location: "http://examplebucket.s3.amazonaws.com/"
-        }
-        */
-    });
-});
+//     var params = {
+//         Bucket: bucketName,
+//         // CreateBucketConfiguration: {
+//         //     LocationConstraint: region
+//         // }
+//     };
+//     s3.createBucket(params, function(err, data) {
+//         if (err) console.log(err, err.stack); // an error occurred
+//         else {
+//             console.log(data); // successful response
+//             res.json({ data: data });
+//         }
+//         /*
+//         data = {
+//          Location: "http://examplebucket.s3.amazonaws.com/"
+//         }
+//         */
+//     });
+// });
 
 router.delete('/buckets/:bucketName', function(req, res) {
     var s3 = new AWS.S3();
@@ -101,14 +111,16 @@ router.delete('/buckets/:bucketName/:objectKey', function(req, res) {
 
 });
 
+// Upload file to S3
 router.post('/buckets/:bucketName', upload.single('uploadFile'), function(req, res) {
     var urlParams = req.params;
     var file = req.file;
-    console.log(file);
     var s3 = new AWS.S3({
         apiVersion: '2006-03-01',
         params: { Bucket: urlParams.bucketName }
     });
+
+    console.log("Upload file" + file);
 
     fs.readFile(file.path, function(err, data) {
         var params = {
@@ -117,11 +129,19 @@ router.post('/buckets/:bucketName', upload.single('uploadFile'), function(req, r
             Key: file.originalname,
             ACL: 'public-read'
         };
+        var startTime = new Date().getTime();
         s3.upload(params, function(err, data) {
             if (err) console.log(err, err.stack); // an error occurred
             else {
-                console.log(data); // successful response
-                // res.json({ data: "Bucket uploaded successfully!" });
+                var endTime = new Date().getTime();
+                const records = [
+                    {filename: file.originalname, size: "", download: "", upload: endTime - startTime},
+                ];
+                 
+                csvWriter.writeRecords(records)       // returns a promise
+                    .then(() => {
+                        console.log('Write to CSV ---> Done');
+                    });
                 res.redirect('/buckets/' + urlParams.bucketName);
             }
             /*
@@ -136,8 +156,37 @@ router.post('/buckets/:bucketName', upload.single('uploadFile'), function(req, r
             */
         });
     });
+});
 
+// download file
+router.get('/buckets/:bucketName/:objectKey', function(req, res) {
+    var s3 = new AWS.S3({
+        apiVersion: '2006-03-01',
+        params: { Bucket: req.params.bucketName }
+    });
+    var startTime = new Date().getTime(); //ms
+    s3.getObject({ Bucket: req.params.bucketName, Key: req.params.objectKey },
+        function(error, data) {
+            if (error != null) {
+                console.log("Failed to retrieve an object: " + error, error.stack);
+            } else {
+                var endTime = new Date().getTime(); //ms
+                console.log("Loaded " + data.ContentLength + " bytes");
+                console.log(data);
 
+                const records = [
+                    {filename: req.params.objectKey, size: data.ContentLength, download: endTime - startTime, upload: ""},
+                ];
+                 
+                csvWriter.writeRecords(records)       // returns a promise
+                    .then(() => {
+                        console.log('Write to CSV ---> Done');
+                    });
+
+                res.json({ data: data });
+            }
+        }
+    );
 });
 
 module.exports = router;

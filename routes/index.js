@@ -90,7 +90,6 @@ router.get('/buckets/:bucketName', function(req, res, next) {
     s3.listObjects({ Bucket: bucketName }, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
         else {
-            console.log(this.request.httpRequest.endpoint);
             var protocol = this.request.httpRequest.endpoint.protocol;
             var host = this.request.httpRequest.endpoint.host;
             var bucketUrl = protocol + "//" + host + "/";
