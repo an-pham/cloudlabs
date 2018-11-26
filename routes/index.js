@@ -34,9 +34,10 @@ router.get('/', function(req, res, next) {
 
     var promisses = [];
     var bucketList = [];
+    var regions = {};
 
     s3.listBuckets(params, function(err, data) {
-        if (err) console.log(err, err.stack); // an error occurred
+        if (err) console.log("list buckets failed: " + err, err.stack); // an error occurred
         else {
             bucketList = data.Buckets;
 
@@ -46,28 +47,39 @@ router.get('/', function(req, res, next) {
                 var params = {
                     Bucket: b.Name /* required */
                 };
-                s3.getBucketLocation(params, function(err, data) {
-                    if (err) console.log(err);
-                    else {
-                        completed++;
-                        b.Region = data.LocationConstraint;
-                        if (completed == bucketList.length) {
-                            doRender(res);
-                        }
+                var request = s3.getBucketLocation(params);
+                request.on('success', function(response) {
+                    b.Region = response.data.LocationConstraint;
+
+                }).
+                on('error', function(response) {
+                    console.log(response);
+                    b.Region = "Missing";
+                }).
+                on('complete', function(response) {
+                    completed++;
+                    regions[b.Region] = regions[b.Region] || 0;
+                    regions[b.Region]++;
+
+                    if (completed == bucketList.length) {
+                        doRender(res, regions);
                     }
-                });
+
+                }).send();
             });
         }
     });
 
-    function doRender(res) {
+    function doRender(res, regions) {
         // console.log(bucketList);
         app.set('bucketList', bucketList);
 
         res.render('index', {
             title: 'Express',
             bucketList: bucketList,
-            regionList: REGION_LIST
+            regionList: REGION_LIST,
+            defaultRegion: "US East (N. Virginia)",
+            regions: regions
         });
     }
 });
@@ -75,26 +87,26 @@ router.get('/', function(req, res, next) {
 // GET bucket detail page
 router.get('/buckets/:bucketName', function(req, res, next) {
     var bucketName = req.params.bucketName;
-
-    s3.listBuckets(function(err, data) {
+    s3.listObjects({ Bucket: bucketName }, function(err, data) {
         if (err) console.log(err, err.stack); // an error occurred
         else {
-            var bucket = getBucket(bucketName, data.Buckets);
-            console.log(bucket);
-
+            console.log(this.request.httpRequest.endpoint);
+            var protocol = this.request.httpRequest.endpoint.protocol;
+            var host = this.request.httpRequest.endpoint.host;
+            var bucketUrl = protocol + "//" + host + "/";
+            var photos = data.Contents.map(function(img) {
+                var photoKey = img.Key;
+                var photoUrl = bucketUrl + encodeURIComponent(photoKey);
+                return [photoKey, photoUrl];
+            });
             res.render('bucket-detail', {
-                bucket: bucket
-            })
+                objects: photos,
+                bucket: {
+                    Name: bucketName
+                }
+            });
         }
     });
-
-    function getBucket(bucketName, bucketList) {
-        return bucketList.filter(function(b) {
-            if (b.Name == bucketName) {
-                return b;
-            }
-        })[0];
-    }
 });
 
 module.exports = router;
