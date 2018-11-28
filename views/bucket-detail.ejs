@@ -89,7 +89,7 @@
             <div class="panel-body">
               <div class="row">
                 <div class="col-lg-6">
-                  <form role="form" action="/api/buckets/<%=bucket.Name%>" method="post" enctype="multipart/form-data">
+                  <form role="form" action="/api/s3/buckets/<%=bucket.Name%>" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                       <label>Choose file</label>
                       <input type="file" name="uploadFile">
@@ -203,7 +203,7 @@
 
       modalConfirm(function(confirm, data) {
         if (confirm) {
-          var theurl = "/api/buckets/" + data.bucketName + "/" + data.objectKey + "/";
+          var theurl = "/api/s3/buckets/" + data.bucketName + "/" + data.objectKey + "/";
           //Acciones si el usuario confirma
           $.ajax({
             url: theurl,
@@ -226,7 +226,7 @@
       $(".delete-bucket-btn").on('click', function(e) {
         $(".loader").show();
         var bucketName = e.target.name.trim();
-        var theurl = "/api/buckets/" + bucketName + "/";
+        var theurl = "/api/s3/buckets/" + bucketName + "/";
         $.ajax({
           url: theurl,
           type: "DELETE",
@@ -247,7 +247,7 @@
         e.preventDefault();
         // alert("Start to download....");
         console.log("Start to download...");
-        var theurl = "/api/buckets/" + e.target.name + "/" + encodeURIComponent(e.target.id) + "/";
+        var theurl = "/api/s3/buckets/" + e.target.name + "/" + encodeURIComponent(e.target.id) + "/";
         var fileName = encodeURIComponent(e.target.id);
         $.ajax({
           url: theurl,
