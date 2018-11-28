@@ -147,6 +147,36 @@ exports.stopInstance = function(req, res) {
   });
 };
 
+// To start an instance that is previously stopped
+exports.startInstance = function(req, res) {
+  var params = { InstanceIds: [req.params.instanceId] };
+ ec2.startInstances(params, function(err, data) {
+   if (err) {
+      console.log(err, err.stack); // an error occurred
+      res.status(400).send({ data: err });
+    } else {
+      res.status(200).send({ data: data });
+    }
+   /*
+   data = {
+    StartingInstances: [
+       {
+      CurrentState: {
+       Code: 0, 
+       Name: "pending"
+      }, 
+      InstanceId: "i-1234567890abcdef0", 
+      PreviousState: {
+       Code: 80, 
+       Name: "stopped"
+      }
+     }
+    ]
+   }
+   */
+ });
+};
+
 // To update the global region
 exports.changeRegion = function(req, res) {
   var region = req.params.region;

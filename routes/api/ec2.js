@@ -10,6 +10,7 @@ var ec2 = require("../../controllers/ec2Controller");
 // router.get('/amis', ec2.getAMIs);
 router.get('/instances', ec2.getInstances);
 router.get('/instances/:instanceId/stop', ec2.stopInstance);
+router.get('/instances/:instanceId/start', ec2.startInstance);
 
 // ======= POST
 router.post('/set/:region', ec2.changeRegion);
