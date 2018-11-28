@@ -21,21 +21,29 @@
             <% } %>
           </select>
         </div>
-        <div class="col-lg-3">
-          <label for="instance-inp" class="control-label">Instance Id:</label>
+        <div class="col-lg-3 form-group">
+          All instances
           <select id="instance-inp" class="form-control">
             <% for (var i=0; i<instances.length; i++) { %>
-            <% var name = instances[i].Instances[0].InstanceId;
-              if instances[i].Instances[0].Tags[0] {
-                var name = instances[i].Instances[0].Tags[0].Value;
-              } %>
+            <% var name = instances[i].Instances[0].InstanceId; %>
+            <% if (instances[i].Instances[0].Tags[0]) { %>
+            <%  name = instances[i].Instances[0].Tags[0].Value; %>
+            <% } %>
             <option value="<%= instances[i].Instances[0].InstanceId %>">
               <%= name %>
             </option>
             <% } %>
           </select>
         </div>
+
+        <div class="col-lg-3">
+          <label></label>
+          <button type="button" class="btn btn-primary form-control" onclick="drawMetricGraph();">Load graph</button>
+        </div>
       </div>
+
+
+
       <div class="row">
         <canvas id="myChart" width="400" height="400"></canvas>
         <!-- Page wrapper -->
@@ -44,13 +52,43 @@
   </div>
   <script>
   var ctx = document.getElementById("myChart").getContext('2d');
-  var myChart = new Chart(ctx, {
-    type: 'bar',
+  
+  // var chartLabels = [];
+  // var datasets = [];
+
+  function drawMetricGraph(e) {
+    var theurl = '/api/cw/metricData/';
+    $.ajax({
+        url: theurl,
+        type: "POST",
+        data: {
+          instanceIds: [$("#instance-inp option:selected").val()],
+          metrics: [$("#metric-inp option:selected").val()],
+        },
+        success: function(result) {
+          console.log(result);
+          var chartLabels = result.data.MetricDataResults[0].Timestamps;
+          var datasets = result.data.MetricDataResults[0].Values;
+          initChart(chartLabels, datasets);
+        },
+        error: function(result) {
+          
+        },
+        timeout: 8000
+      });
+    // body...
+  }
+
+  var myChart;
+
+  function initChart(labels, datasets) {
+    myChart = new Chart(ctx, {
+    type: 'line',
     data: {
-      labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+      labels: labels,
       datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
+        label: $("#instance-inp option:selected").val() + " - " + $("#metric-inp option:selected").val(),
+        data: datasets,
         backgroundColor: [
           'rgba(255, 99, 132, 0.2)',
           'rgba(54, 162, 235, 0.2)',
@@ -80,6 +118,8 @@
       }
     }
   });
+
+  }
 
   </script>
 </body>

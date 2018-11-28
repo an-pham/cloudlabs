@@ -75,8 +75,15 @@ exports.listMetrics = function(req, res) {
 
 // To get metric data of specific metrics and instance
 exports.getMetricData = function(req, res) {
-  var instances = req.body.instanceIds || [DEFAULT_INSTANCE];
-  var metrics = req.body.metrics || ['NetworkIn'];
+  var instances = req.body['instanceIds[]'];// || [DEFAULT_INSTANCE];
+  var metrics = req.body['metrics[]'];// || ['NetworkIn'];
+
+  if (!Array.isArray(instances)) instances = [instances];
+  if (!Array.isArray(metrics)) metrics = [metrics];
+
+  // console.log(req.body);
+  // console.log(req.body['instanceIds[]']);
+  // console.log(req.body['metrics[]']);
   // var label = req.body.label || 'Default';
 
   var dimensionArr = instances.map(function(value, i) { return { Name: "InstanceId", Value: value }; });
@@ -102,6 +109,8 @@ exports.getMetricData = function(req, res) {
       ReturnData: true
     };
   });
+
+  console.log(dimensionArr);
 
   var params = {
     EndTime: new Date,
