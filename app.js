@@ -25,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // AnP: define routes here
 app.use('/', indexRouter);
 app.use('/api/s3', s3Router);
+
 app.use('/api/ec2', ec2Router);
 app.use('/api/cw', cloudwatch);
 
