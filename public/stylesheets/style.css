@@ -102,3 +102,16 @@ a {
 }
 /* 2 columns */
 /*.grid-item--width2 { width: 40%; }*/
+.fa-play,.fa-pause
+{
+    pointer-events: none;
+
+}
+
+.alert{
+  margin:20px;
+}
+
+
+
+

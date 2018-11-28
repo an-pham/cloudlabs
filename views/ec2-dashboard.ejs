@@ -2,318 +2,381 @@
 <html lang="en">
 
 <head>
-  <% include ./partials/head %>
+	<% include ./partials/head %>
 </head>
-
 
 <body>
 	<% include ./partials/navigation %>
 	<script type="text/javascript" charset="utf-8">
+	function printSuccessMsg() {
+		$(".messages-result .alert-success").show();
+		$(".messages-result .alert-danger").hide();
+	}
 
-		let updateTable = function(instances){
-			console.log(instances);
-			//alert("inside update table");
-			tbody=document.getElementById("instances-table");
-			tbl=$('#bucket-list').DataTable();
+	function printFailMsg() {
+		$(".messages-result .alert-success").hide();
+		$(".messages-result .alert-danger").show();
 
-			for (var i = instances.length - 1; i >= 0; i--) {
-				tbl.row.add([i+1,
-					instances[i].Instances[0].Tags[0]?instances[i].Instances[0].Tags[0].Value:"No Name",
-					instances[i].Instances[0].Placement.AvailabilityZone,
-					instances[i].Instances[0].InstanceType,
-					instances[i].Instances[0].PublicIpAddress?instances[i].Instances[0].PublicIpAddress:"Not yet",
-					instances[i].Instances[0].State.Name,
+	}
+
+	function stopInstance(e) {
+		console.log(e);
+		var theurl = '/api/ec2/instances/' + e.target.id + '/stop';
+		$.ajax({
+			url: theurl,
+			type: "GET",
+			success: function(result) {
+				console.log(result);
+				printSuccessMsg();
+			},
+			error: function(result) {
+				console.log(result);
+				printFailMsg();
+
+			},
+			timeout: 8000
+		});
+		// body...
+	}
+
+	function startInstance(e) {
+		var theurl = '/api/ec2/instances/' + e.target.id + '/start';
+		$.ajax({
+			url: theurl,
+			type: "GET",
+			success: function(result) {
+				console.log(result);
+				printSuccessMsg();
+			},
+			error: function(result) {
+				console.log(result);
+				printFailMsg();
+
+			},
+			timeout: 8000
+		});
+		// body...
+	}
+
+
+
+
+
+
+
+
+	let updateTable = function(instances) {
+		console.log(instances);
+		//alert("inside update table");
+		tbody = document.getElementById("instances-table");
+		tbl = $('#bucket-list').DataTable();
+		tbl.clear();
+		tbl.draw();
+
+		for (var i = instances.length - 1; i >= 0; i--) {
+			tbl.row.add([i + 1,
+				instances[i].Instances[0].Tags[0] ? instances[i].Instances[0].Tags[0].Value : "No Name",
+				instances[i].Instances[0].Placement.AvailabilityZone,
+				instances[i].Instances[0].InstanceType,
+				instances[i].Instances[0].PublicIpAddress ? instances[i].Instances[0].PublicIpAddress : "Not yet",
+				instances[i].Instances[0].State.Name,
+				`
+			<button type="button" id="` + instances[i].Instances[0].InstanceId + `"   class="btn start-btn-ec2 btn-success btn-circle"><i class="fa fa-play "></i></button>
+			<button type="button" id="` + instances[i].Instances[0].InstanceId + `"  class="btn stop-btn-ec2 btn-danger btn-circle"><i class="fa fa-pause"></i></button>
+
 					`
-			<button type="button" class="btn btn-success btn-circle"><i class="fa fa-play "></i></button>
-			<button type="button" class="btn btn-danger btn-circle"><i class="fa fa-pause"></i></button>
+				//instances[i]["Instances"]["0"]["Tags"]["0"]["Value"],
+				//instances[i]["Instances"],
+			]).draw();
+			$(".start-btn-ec2").on('click', function(e) {
+				startInstance(e);
+			});
+			$(".stop-btn-ec2").on('click', function(e) {
+				stopInstance(e);
+			});
+			//tbody.appendChild(document.createElement('tr',{"class":"d"}));
 
-					`
-					//instances[i]["Instances"]["0"]["Tags"]["0"]["Value"],
-					//instances[i]["Instances"],
-					]).draw();
-				//tbody.appendChild(document.createElement('tr',{"class":"d"}));
-				
-				// tbody.innerHTML +=`<tr class="odd gradeX" role="row">`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
+			// tbody.innerHTML +=`<tr class="odd gradeX" role="row">`+
+			// `<td class="center">` + +`</td>`+
+			// `<td class="center">` + +`</td>`+
+			// `<td class="center">` + +`</td>`+
+			// `<td class="center">` + +`</td>`+
+			// `<td class="center">` + +`</td>`+
+			// `<td class="center">` + +`</td>`+
+			// `<td class="center">` + +`</td>`+
 
-				// `</tr>`;
-			}
-			
+			// `</tr>`;
 		}
 
-		var ec2Instances= <%- JSON.stringify(ec2Instances)%>;
-		var ec2AMIs= <%- JSON.stringify(ec2Instances)%>;
-		var ec2Regions= <%- JSON.stringify(ec2Instances)%>;
+	}
 
-		//console.log(ec2Instances);
-		$(document).ready(function(){ 
-			$('#bucket-list').DataTable({
-			  responsive: true,
-			  columnDefs: [
-				{ "orderable": false, "targets": 4 }
-			  ]
-			});
-			$.ajax({url:"/api/ec2/instances",success:function(res){
+	var ec2Instances = <%- JSON.stringify(ec2Instances)%>;
+	var ec2AMIs = <%- JSON.stringify(ec2Instances)%>;
+	var ec2Regions = <%- JSON.stringify(ec2Instances)%>;
+
+	function refreshData() {
+		$.ajax({
+			url: "/api/ec2/instances",
+			success: function(res) {
 				//instanceCount=res["count"];
-				iii=res["data"]["Reservations"];
-			//$("#instance-count").text(instanceCount);
+				iii = res["data"]["Reservations"];
+				//$("#instance-count").text(instanceCount);
 
+				updateTable(res["data"]["Reservations"]);
+			}
+		});
+	}
+	//console.log(ec2Instances);
+	$(document).ready(function() {
+		$("#refresh-btn").on('click', function(e) {
+			refreshData();
+		});
+
+		$("#ec2-region-inp").on('change', function(e) {
+			console.log(e);
+			var region = e.target.value;
+			$.ajax({
+				url: "/api/ec2/set/" + region,
+				success: function(res) {
+					//instanceCount=res["count"];
+					iii = res["data"]["Reservations"];
+					//$("#instance-count").text(instanceCount);
 					updateTable(res["data"]["Reservations"]);
-			}});
+				}
+			});
+			refreshData();
 		});
 
 
-		
+
+
+		$('#bucket-list').DataTable({
+			responsive: true,
+			columnDefs: [
+				{ "orderable": false, "targets": 4 }
+			]
+		});
+
+		refreshData();
+
+
+
+	});
 	</script>
 	<div id="page-wrapper">
-		 <div class="row">
+		<div class="row">
 			<div class="col-lg-12">
 				<h1 class="page-header">AWS EC2 Control Panel</h1>
 			</div>
 		</div>
-
 		<div class="col-lg-3 col-md-6">
-		  <div class="panel panel-green">
-			<div class="panel-heading">
-			  <div class="row">
-				<div class="col-xs-3">
-				  <i class="fa fa-tasks fa-5x"></i>
-				</div>
-				<div class="col-xs-9 text-right">
-				  <div class="huge" id="instance-count">
-					<%= ec2Instances.Reservations.length %>
-				  </div>
-				  <div>Instances!</div>
-				</div>
-			  </div>
-			</div>
-			<div class="modal fade" id="createbucket" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-			  <div class="modal-dialog" role="document">
-				<div class="modal-content">
-				  <div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-					<h4 class="modal-title" id="exampleModalLabel">Create a new instance</h4>
-				  </div>
-				  <div class="modal-body">
-					<div id="notification-placeholder">
-					  <div class="alert alert-success alert-dismissable">Successfully created the bucket!</div>
-					  <div class="alert alert-danger alert-dismissable">Something went wrong! Please try again</div>
+			<div class="panel panel-green">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-xs-3">
+							<i class="fa fa-tasks fa-5x"></i>
+						</div>
+						<div class="col-xs-9 text-right">
+							<div class="huge" id="instance-count">
+								<%= ec2Instances.Reservations.length %>
+							</div>
+							<div>Instances!</div>
+						</div>
 					</div>
-					<form>
-					  <div class="form-group">
-						<label for="bucket-name-inp" class="control-label">Bucket Name:</label>
-						<input type="text" class="form-control" id="bucket-name-inp">
-					  </div>
-					  <div class="form-group">
-						<label for="bucket-region-inp" class="control-label">Region:</label>
-						<select id="bucket-region-inp" class="form-control">
-						  
-						  <option value="us-east-2">
-							US East (Ohio)
-						  </option>
-						  
-						  <option value="us-east-1">
-							US East (N. Virginia) 
-						  </option>
-						  
-						  <option value="us-west-1">
-							US West (N. California)
-						  </option>
-						  
-						  <option value="us-west-2">
-							US West (Oregon)
-						  </option>
-						  
-						  <option value="ap-south-1">
-							Asia Pacific (Mumbai)
-						  </option>
-						  
-						  <option value="ap-northeast-2">
-							Asia Pacific (Seoul)
-						  </option>
-						  
-						  <option value="ap-southeast-1">
-							Asia Pacific (Singapore)
-						  </option>
-						  
-						  <option value="ap-southeast-2">
-							Asia Pacific (Sydney)
-						  </option>
-						  
-						  <option value="ap-northeast-1">
-							Asia Pacific (Tokyo)
-						  </option>
-						  
-						  <option value="ca-central-1">
-							Canada (Central)
-						  </option>
-						  
-						  <option value="eu-central-1">
-							EU (Frankfurt)
-						  </option>
-						  
-						  <option value="eu-west-1">
-							EU (Ireland)
-						  </option>
-						  
-						  <option value="eu-west-2">
-							EU (London)
-						  </option>
-						  
-						  <option value="eu-west-3">
-							EU (Paris)
-						  </option>
-						  
-						  <option value="sa-east-1">
-							South America (São Paulo)
-						  </option>
-						  
-						</select>
-					  </div>
-					</form>
-				  </div>
-				  <div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					<button type="button" id="create-bucket-btn" class="btn btn-primary">Create it!</button>
-				  </div>
 				</div>
-			  </div>
-			</div>
-			<a href="#">
+				<div class="modal fade" id="createbucket" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+								<h4 class="modal-title" id="exampleModalLabel">Create a new instance</h4>
+							</div>
+							<div class="modal-body">
+								<div id="notification-placeholder">
+									<div class="alert alert-success alert-dismissable">Successfully created the bucket!</div>
+									<div class="alert alert-danger alert-dismissable">Something went wrong! Please try again</div>
+								</div>
+								<form>
+									<div class="form-group">
+										<label for="bucket-name-inp" class="control-label">Bucket Name:</label>
+										<input type="text" class="form-control" id="bucket-name-inp">
+									</div>
+									<div class="form-group">
+										<label for="bucket-region-inp" class="control-label">Region:</label>
+										<select id="bucket-region-inp" class="form-control">
+											<option value="us-east-2">
+												US East (Ohio)
+											</option>
+											<option value="us-east-1">
+												US East (N. Virginia)
+											</option>
+											<option value="us-west-1">
+												US West (N. California)
+											</option>
+											<option value="us-west-2">
+												US West (Oregon)
+											</option>
+											<option value="ap-south-1">
+												Asia Pacific (Mumbai)
+											</option>
+											<option value="ap-northeast-2">
+												Asia Pacific (Seoul)
+											</option>
+											<option value="ap-southeast-1">
+												Asia Pacific (Singapore)
+											</option>
+											<option value="ap-southeast-2">
+												Asia Pacific (Sydney)
+											</option>
+											<option value="ap-northeast-1">
+												Asia Pacific (Tokyo)
+											</option>
+											<option value="ca-central-1">
+												Canada (Central)
+											</option>
+											<option value="eu-central-1">
+												EU (Frankfurt)
+											</option>
+											<option value="eu-west-1">
+												EU (Ireland)
+											</option>
+											<option value="eu-west-2">
+												EU (London)
+											</option>
+											<option value="eu-west-3">
+												EU (Paris)
+											</option>
+											<option value="sa-east-1">
+												South America (São Paulo)
+											</option>
+										</select>
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+								<button type="button" id="create-bucket-btn" class="btn btn-primary">Create it!</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<a href="#">
 			  <div class="panel-footer">
-				  <span class="pull-left" data-toggle="modal" data-target="#createbucket">Create a new bucket!</span>
+				  <span class="pull-left" data-toggle="modal" data-target="#createbucket">Create a new instance!</span>
 				  <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
 				  <div class="clearfix"></div>
 			  </div>
 			</a>
-		  </div>
+			</div>
 		</div>
-
-
-
 		<div class="row">
-				  <div class="row">
-		<div class="col-lg-12">
-		  <div class="panel panel-default">
-		   
-			<div class="panel-heading">
-			  Instances
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-			  <div class="loader"></div>
-			  <div class="alert alert-success alert-dismissable" id="action-alert-success">
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<span class="alert-content"></span>
-			  </div>
-			  <div class="alert alert-danger alert-dismissable" id="action-alert-error">
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-				<span class="alert-content"></span>
-			  </div>
-			  <div class="row">
-			  <div class="form-group col-lg-6">
-						<label for="bucket-region-inp" class="control-label">Region:</label>
-						<select id="bucket-region-inp" class="form-control">
-						  
-						  <option value="us-east-2">
-							US East (Ohio)
-						  </option>
-						  
-						  <option value="us-east-1">
-							US East (N. Virginia) 
-						  </option>
-						  
-						  <option value="us-west-1">
-							US West (N. California)
-						  </option>
-						  
-						  <option value="us-west-2">
-							US West (Oregon)
-						  </option>
-						  
-						  <option value="ap-south-1">
-							Asia Pacific (Mumbai)
-						  </option>
-						  
-						  <option value="ap-northeast-2">
-							Asia Pacific (Seoul)
-						  </option>
-						  
-						  <option value="ap-southeast-1">
-							Asia Pacific (Singapore)
-						  </option>
-						  
-						  <option value="ap-southeast-2">
-							Asia Pacific (Sydney)
-						  </option>
-						  
-						  <option value="ap-northeast-1">
-							Asia Pacific (Tokyo)
-						  </option>
-						  
-						  <option value="ca-central-1">
-							Canada (Central)
-						  </option>
-						  
-						  <option value="eu-central-1">
-							EU (Frankfurt)
-						  </option>
-						  
-						  <option value="eu-west-1">
-							EU (Ireland)
-						  </option>
-						  
-						  <option value="eu-west-2">
-							EU (London)
-						  </option>
-						  
-						  <option value="eu-west-3">
-							EU (Paris)
-						  </option>
-						  
-						  <option value="sa-east-1">
-							South America (São Paulo)
-						  </option>
-						  
-						</select>
-					  </div>
-					</div>
-			  <table width="100%" class="table table-striped table-bordered table-hover" id="bucket-list">
-				<thead>
-				  <tr role="row">
-					<th>#</th>
-					<th>Instance Name</th>
-					<th>Region</th>
-					<th>Type</th>
-					<th>IP Address</th>
-					<th>Status</th>
-					<th>
-					  Operations
-					  <i tabindex="0" class="fa fa-question-circle popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" title="Delete a bucket" data-content="This will delete all objects inside bucket!" aria-hidden="true" data-placement="bottom">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							Instances
+						</div>
+						<!-- /.panel-heading -->
+						<div class="panel-body">
+							<div class="loader"></div>
+							<div class="alert alert-success alert-dismissable" id="action-alert-success">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<span class="alert-content"></span>
+							</div>
+							<div class="alert alert-danger alert-dismissable" id="action-alert-error">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<span class="alert-content"></span>
+							</div>
+							<div class="row messages-result">
+								<div id="notification-placeholder">
+									<div class="alert alert-success alert-dismissable">Successfully done!</div>
+									<div class="alert alert-danger alert-dismissable">Something went wrong! Please try again</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="form-group col-lg-6">
+									<label for="ec2-region-inp" class="control-label">Region:</label>
+									<select id="ec2-region-inp" class="form-control">
+										<option value="us-east-2">
+											US East (Ohio)
+										</option>
+										<option value="us-east-1">
+											US East (N. Virginia)
+										</option>
+										<option value="us-west-1">
+											US West (N. California)
+										</option>
+										<option value="us-west-2">
+											US West (Oregon)
+										</option>
+										<option value="ap-south-1">
+											Asia Pacific (Mumbai)
+										</option>
+										<option value="ap-northeast-2">
+											Asia Pacific (Seoul)
+										</option>
+										<option value="ap-southeast-1">
+											Asia Pacific (Singapore)
+										</option>
+										<option value="ap-southeast-2">
+											Asia Pacific (Sydney)
+										</option>
+										<option value="ap-northeast-1">
+											Asia Pacific (Tokyo)
+										</option>
+										<option value="ca-central-1">
+											Canada (Central)
+										</option>
+										<option value="eu-central-1">
+											EU (Frankfurt)
+										</option>
+										<option value="eu-west-1">
+											EU (Ireland)
+										</option>
+										<option value="eu-west-2">
+											EU (London)
+										</option>
+										<option value="eu-west-3">
+											EU (Paris)
+										</option>
+										<option value="sa-east-1">
+											South America (São Paulo)
+										</option>
+									</select>
+									<button type="button" id="refresh-btn" class="btn btn-primary">Refresh!</button>
+								</div>
+							</div>
+							<table width="100%" class="table table-striped table-bordered table-hover" id="bucket-list">
+								<thead>
+									<tr role="row">
+										<th>#</th>
+										<th>Instance Name</th>
+										<th>Region</th>
+										<th>Type</th>
+										<th>IP Address</th>
+										<th>Status</th>
+										<th>
+											Operations
+											<i tabindex="0" class="fa fa-question-circle popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" title="Delete a bucket" data-content="This will delete all objects inside bucket!" aria-hidden="true" data-placement="bottom">
 						<!-- <i class="fa fa-question-circle" aria-hidden="true"></i> -->
-					  </a>
-					</th>
-				  </tr>
-				</thead>
-				<tbody id="instances-table">
-				  <!--  }  -->
-				</tbody>
-			  </table>
-			  <!-- /.table-responsive -->
+											</a>
+										</th>
+									</tr>
+								</thead>
+								<tbody id="instances-table">
+									<!--  }  -->
+								</tbody>
+							</table>
+							<!-- /.table-responsive -->
+						</div>
+						<!-- /.panel-body -->
+					</div>
+					<!-- /.panel -->
+				</div>
+				<!-- /.col-lg-12 -->
 			</div>
-			<!-- /.panel-body -->
-		  </div>
-		  <!-- /.panel -->
-		</div>
-		<!-- /.col-lg-12 -->
-	  </div>
 		</div>
 	</div>
 </body>
+
 </html>
