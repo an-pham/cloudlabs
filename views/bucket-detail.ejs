@@ -112,10 +112,12 @@
       </div>
     </div>
     <div class="alert" role="alert" id="result"></div>
-    <script src="../vendor/jquery/jquery.min.js"></script>
-    <!-- Bootstrap Core JavaScript -->
-    <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <% include ./partials/scripts %>
+    <!-- /#more scripts that only use here -->
     <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+
+    <!-- /#more scripts that only use here -->
     <script type="text/javascript">
     $(document).ready(function() {
       $('.grid').masonry({
@@ -163,7 +165,6 @@
       modalConfirm(function(confirm, data) {
         if (confirm) {
           var theurl = "/api/s3/buckets/" + data.bucketName + "/" + data.objectKey + "/";
-          //Acciones si el usuario confirma
           $.ajax({
             url: theurl,
             type: "DELETE",
@@ -177,7 +178,6 @@
             timeout: 8000
           });
         } else {
-          //Acciones si el usuario no confirma
           console.log("Cancel delete");
         }
       });
@@ -212,22 +212,14 @@
           url: theurl,
           type: "GET",
           success: function(result) {
-            // $(".loader").hide();
-            // window.location.href = "/";
             var downloadUrl = e.target.src;
-            // var base64 = result.data.Body;
             var link = document.createElement("a");
 
             link.setAttribute("href", downloadUrl);
             link.setAttribute("download", fileName);
             link.click();
-            // $('<iframe>', { id:'idown', src:downloadUrl }).hide().appendTo('body')
-            // $("#idown").click();
           },
           error: function(result) {
-            // $(".loader").hide();
-            // $("#action-alert-error .alert-content").text(result.responseJSON.data.message);
-            // $("#action-alert-error").show();
             console.log(result);
           },
           timeout: 10000
