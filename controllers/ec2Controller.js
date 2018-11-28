@@ -6,16 +6,17 @@ var app = express();
 app.set('globalRegion', 'eu-central-1');
 
 AWS.config.apiVersions = { ec2: '2016-11-15' };
-AWS.config.update({ region: app.get('globalRegion')});
+AWS.config.update({ region: app.get('globalRegion') });
 console.log('=======global region: ' + app.get('globalRegion'));
 
 var ec2 = new AWS.EC2();
 
+// To list region names and their endpoints
 exports.getRegions = function(req, res) {
   var data = {};
 
   ec2.describeRegions({}, function(err, data) {
-    if (err) console.log(err, err.stack);
+    if (err) res.status(400).send({ data: err });
     else res.json({ data: data });
     /*data = {
   Regions: [{
@@ -67,6 +68,7 @@ exports.getRegions = function(req, res) {
   });
 };
 
+// To list Ubuntu AMI which can be used for running instance
 exports.getAMIs = function(req, res) {
   var params = {
     ExecutableUsers: [
@@ -81,14 +83,41 @@ exports.getAMIs = function(req, res) {
 
   };
   ec2.describeImages(params, function(err, data) {
-    if (err) console.log(err, err.stack);
-    else res.json({ 
-    		count: data.Images.length,
-    		data: data,
-    	});
+    if (err) res.status(400).send({ data: err });
+    else res.json({
+      count: data.Images.length,
+      data: data,
+    });
   });
 };
 
+//POST: To run an instance
+exports.startInstance = function(req, res) {
+  res.status(200).send({ data: {} });
+};
+
+//GET: To list all instances and their status
+exports.getInstances = function(req, res) {
+  var params = {
+    // InstanceIds: [
+    //   "i-1234567890abcdef0"
+    // ]
+  };
+  ec2.describeInstances(params, function(err, data) {
+    if (err) {
+     	console.log(err, err.stack); // an error occurred
+      res.status(400).send({ data: err });
+    } else res.status(200).send({ data: data });
+  });
+
+};
+
+//GET: To stop an instance
+exports.stopInstance = function(req, res) {
+  res.status(200).send({ data: {} });
+};
+
+// To update the global region
 exports.changeRegion = function(req, res) {
   var region = req.params.region;
   app.set('globalRegion', region);
@@ -102,5 +131,5 @@ exports.list = function(req, res) {
 
 function setRegion() {
   AWS.config.update({ region: app.get('globalRegion') });
-	ec2 = new AWS.EC2();
+  ec2 = new AWS.EC2();
 }
