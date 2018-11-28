@@ -13,6 +13,6 @@ router.get('/instances/:instanceId/stop', ec2.stopInstance);
 
 // ======= POST
 router.post('/set/:region', ec2.changeRegion);
-router.post('/instances/start', ec2.startInstance);
+router.post('/instances/start', ec2.runInstance);
 
 module.exports = router;

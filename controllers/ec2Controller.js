@@ -75,12 +75,25 @@ exports.getAMIs = function(req, res) {
       'all'
     ],
     Filters: [
-      { Name: 'name', Values: ['*ubuntu*'] },
-      { Name: 'owner-alias', Values: ['amazon', 'aws-marketplace'] },
-      // { Name: 'image-id', Values: ['ami-1111ec7e'] }
-      // { Name: 'owner-id', Values: ['851601128636'] }
-    ]
-
+      // { Name: 'name', Values: ['*ubuntu*'] },
+      // { Name: 'owner-alias', Values: ['amazon'] },
+      {
+        Name: 'image-id',
+        Values: [
+          'ami-034fffcc6a0063961',
+          'ami-07f1aa69c7c7b01c9',
+          'ami-0bdf93799014acdc4',
+          'ami-0405a63f383fddd6b',
+          'ami-c9e6e122',
+          'ami-086a09d5b9fa35dc7'
+        ]
+      },
+      // { Name: 'owner-id', Values: ['099720109477', '801119661308'] },
+      // { Name: 'state', Values: ['available'] },
+      // { Name: 'image-type', Values: ['machine'] },
+      // { Name: 'virtualization-type', Values: ['hvm'] },
+      // { Name: 'architecture', Values: ['x86_64'] },
+    ],
   };
   ec2.describeImages(params, function(err, data) {
     if (err) res.status(400).send({ data: err });
@@ -91,9 +104,48 @@ exports.getAMIs = function(req, res) {
   });
 };
 
+const DEFAULT_AMI = 'ami-086a09d5b9fa35dc7';
 //POST: To run an instance
-exports.startInstance = function(req, res) {
-  res.status(200).send({ data: {} });
+exports.runInstance = function(req, res) {
+  var imageId = req.body.imageId || DEFAULT_AMI;
+  var numOfInstance = req.body.numOfInstance || 1;
+
+  // maximum is 5 instance
+  var maxInstances = 5;
+  numOfInstance = numOfInstance <= maxInstances ? numOfInstance : maxInstances;
+
+  var params = {
+    // BlockDeviceMappings: [{
+    //   DeviceName: "/dev/sdh",
+    //   Ebs: {
+    //     VolumeSize: 100
+    //   }
+    // }],
+    ImageId: imageId,
+    InstanceType: "t2.micro", //Free tier
+    KeyName: "anamir-frankfurt-m7024e",
+    MaxCount: numOfInstance,
+    MinCount: 1,
+    SecurityGroupIds: [
+      "sg-0b5edca016d5e0d3e"
+    ],
+    // SubnetId: "subnet-6e7f829e",
+    TagSpecifications: [{
+      ResourceType: "instance",
+      Tags: [{
+        Key: "Name",
+        Value: "amiri" + uuid.v4(),
+      }]
+    }]
+  };
+  ec2.runInstances(params, function(err, data) {
+    if (err) {
+      console.log(err, err.stack); // an error occurred
+      res.status(400).send({ data: err });
+    } else {
+      res.status(200).send({ data: data });
+    }
+  });
 };
 
 //GET: To list all instances and their status
@@ -105,16 +157,44 @@ exports.getInstances = function(req, res) {
   };
   ec2.describeInstances(params, function(err, data) {
     if (err) {
-     	console.log(err, err.stack); // an error occurred
+      console.log(err, err.stack); // an error occurred
       res.status(400).send({ data: err });
-    } else res.status(200).send({ data: data });
+    } else res.status(200).send({ count: data.Reservations.length, data: data });
   });
-
 };
 
 //GET: To stop an instance
 exports.stopInstance = function(req, res) {
-  res.status(200).send({ data: {} });
+  var params = {
+    InstanceIds: [
+      req.params.instanceId
+    ]
+  };
+  ec2.stopInstances(params, function(err, data) {
+    if (err) {
+    	console.log(err, err.stack); // an error occurred
+      res.status(400).send({ data: err });
+    } else {
+    	res.status(200).send({ data: data });
+    }
+    /*
+    data = {
+     StoppingInstances: [
+        {
+       CurrentState: {
+        Code: 64, 
+        Name: "stopping"
+       }, 
+       InstanceId: "i-1234567890abcdef0", 
+       PreviousState: {
+        Code: 16, 
+        Name: "running"
+       }
+      }
+     ]
+    }
+    */
+  });
 };
 
 // To update the global region
