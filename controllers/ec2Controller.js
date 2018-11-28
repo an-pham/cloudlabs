@@ -15,60 +15,6 @@ var ec2 = new AWS.EC2();
 exports.getRegions = function(req, res) {
   console.log(ec2);
   return ec2.describeRegions({}).promise();
-  //, function(err, data) {
-    // console.log(data);
-    // return err ? {} : data
-    // if (err) return {}; //res.status(400).send({ data: err });
-    // else res.json({ data: data });
-    // else return data;
-    /*data = {
-  Regions: [{
-      Endpoint: "ec2.ap-south-1.amazonaws.com",
-      RegionName: "ap-south-1"
-    },
-    {
-      Endpoint: "ec2.eu-west-1.amazonaws.com",
-      RegionName: "eu-west-1"
-    },
-    {
-      Endpoint: "ec2.ap-southeast-1.amazonaws.com",
-      RegionName: "ap-southeast-1"
-    },
-    {
-      Endpoint: "ec2.ap-southeast-2.amazonaws.com",
-      RegionName: "ap-southeast-2"
-    },
-    {
-      Endpoint: "ec2.eu-central-1.amazonaws.com",
-      RegionName: "eu-central-1"
-    },
-    {
-      Endpoint: "ec2.ap-northeast-2.amazonaws.com",
-      RegionName: "ap-northeast-2"
-    },
-    {
-      Endpoint: "ec2.ap-northeast-1.amazonaws.com",
-      RegionName: "ap-northeast-1"
-    },
-    {
-      Endpoint: "ec2.us-east-1.amazonaws.com",
-      RegionName: "us-east-1"
-    },
-    {
-      Endpoint: "ec2.sa-east-1.amazonaws.com",
-      RegionName: "sa-east-1"
-    },
-    {
-      Endpoint: "ec2.us-west-1.amazonaws.com",
-      RegionName: "us-west-1"
-    },
-    {
-      Endpoint: "ec2.us-west-2.amazonaws.com",
-      RegionName: "us-west-2"
-    }
-  ]}*/
-
-  // });
 };
 
 // To list Ubuntu AMI which can be used for running instance
@@ -78,8 +24,6 @@ exports.getAMIs = function(req, res) {
       'all'
     ],
     Filters: [
-      // { Name: 'name', Values: ['*ubuntu*'] },
-      // { Name: 'owner-alias', Values: ['amazon'] },
       {
         Name: 'image-id',
         Values: [
@@ -91,11 +35,6 @@ exports.getAMIs = function(req, res) {
           'ami-086a09d5b9fa35dc7'
         ]
       },
-      // { Name: 'owner-id', Values: ['099720109477', '801119661308'] },
-      // { Name: 'state', Values: ['available'] },
-      // { Name: 'image-type', Values: ['machine'] },
-      // { Name: 'virtualization-type', Values: ['hvm'] },
-      // { Name: 'architecture', Values: ['x86_64'] },
     ],
   };
   return ec2.describeImages(params).promise();
@@ -108,8 +47,8 @@ exports.getAMIs = function(req, res) {
   // });
 };
 
-//GET: To list all instances and their status
-exports.getInstances = function(req, res) {
+
+exports.describeInstances = function() {
   return ec2.describeInstances({}).promise();
   //   , function(err, data) {
   //   if (err) {
@@ -117,6 +56,17 @@ exports.getInstances = function(req, res) {
   //     res.status(400).send({ data: err });
   //   } else res.status(200).send({ count: data.Reservations.length, data: data });
   // });
+};
+
+// ==== APIs
+//GET: To list all instances and their status
+exports.getInstances = function(req, res) {
+  ec2.describeInstances({}, function(err, data) {
+    if (err) {
+      console.log(err, err.stack); // an error occurred
+      res.status(400).send({ data: err });
+    } else res.status(200).send({ count: data.Reservations.length, data: data });
+  });
 };
 
 const DEFAULT_AMI = 'ami-086a09d5b9fa35dc7';

@@ -3,7 +3,7 @@ var router = express.Router();
 
 var ctrl = require("../../controllers/cloudwatchCtrl");
 
-// router.get('/', ctrl.listMetrics);
+router.get('/', ctrl.listMetrics);
 router.post('/metricData', ctrl.getMetricData);
 
 module.exports = router;

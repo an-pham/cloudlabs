@@ -11,7 +11,34 @@
     <% include ./partials/navigation %>
     <div id="page-wrapper">
       <div class="row">
+        <div class="col-lg-3">
+          <label for="metric-inp" class="control-label">Metric:</label>
+          <select id="metric-inp" class="form-control">
+            <% for (var i=0; i<allMetrics.length; i++) { %>
+            <option value="<%= allMetrics[i] %>">
+              <%= allMetrics[i] %>
+            </option>
+            <% } %>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label for="instance-inp" class="control-label">Instance Id:</label>
+          <select id="instance-inp" class="form-control">
+            <% for (var i=0; i<instances.length; i++) { %>
+            <% var name = instances[i].Instances[0].InstanceId;
+              if instances[i].Instances[0].Tags[0] {
+                var name = instances[i].Instances[0].Tags[0].Value;
+              } %>
+            <option value="<%= instances[i].Instances[0].InstanceId %>">
+              <%= name %>
+            </option>
+            <% } %>
+          </select>
+        </div>
+      </div>
+      <div class="row">
         <canvas id="myChart" width="400" height="400"></canvas>
+        <!-- Page wrapper -->
       </div>
     </div>
   </div>

@@ -86,7 +86,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/ec2-dashboard', function(req, res, next) {
-  Promise.all([ec2Ctrl.getRegions(), ec2Ctrl.getAMIs(), ec2Ctrl.getInstances()]).then(function(values) {
+  Promise.all([ec2Ctrl.getRegions(), ec2Ctrl.getAMIs(), ec2Ctrl.describeInstances()]).then(function(values) {
     res.render('ec2-dashboard', {
       ec2Regions: values[0],
       ec2AMIs: values[1],
@@ -125,20 +125,15 @@ router.get('/buckets/:bucketName', function(req, res, next) {
 
 // CLOUDWATCH MANAGEMENT PAGE
 router.get('/cloudwatch', function(req, res, next) {
-  cwCtrl.getIndex().then(function(err, data) {
-    if (err) {
-      console.log(err, err.stack); // an error occurred
-      render('cloudwatch', {});
-      // res.status(400).send({ data: err });
-    } else {
-      // console.log(data); // successful response
-      res.render('cloudwatch', {
-        count: data.Metrics.length,
-        // for showing on UI
-        allMetrics: data.Metrics.map(function(val, i) { return val.MetricName; }),
-        data: data
-      });
-    }
+  Promise.all([cwCtrl.getIndex(), ec2Ctrl.describeInstances()]).then(function(values) {
+    console.log(values[0]);
+    console.log(values[1].Reservations);
+    res.render('cloudwatch', {
+      count: values[0].Metrics.length,
+      allMetrics: values[0].Metrics.map(function(val, i) { return val.MetricName; }),
+      metricsData: values[0],
+      instances: values[1].Reservations
+    });
   });
 });
 
