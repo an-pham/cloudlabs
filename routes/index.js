@@ -84,6 +84,10 @@ router.get('/', function(req, res, next) {
     }
 });
 
+router.get('/ec2',function(req,res){
+    res.render('ec2');
+});
+
 // GET bucket detail page
 router.get('/buckets/:bucketName', function(req, res, next) {
     var bucketName = req.params.bucketName;
