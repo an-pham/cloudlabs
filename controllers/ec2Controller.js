@@ -13,11 +13,14 @@ var ec2 = new AWS.EC2();
 
 // To list region names and their endpoints
 exports.getRegions = function(req, res) {
-  var data = {};
-
-  ec2.describeRegions({}, function(err, data) {
-    if (err) res.status(400).send({ data: err });
-    else res.json({ data: data });
+  console.log(ec2);
+  return ec2.describeRegions({}).promise();
+  //, function(err, data) {
+    // console.log(data);
+    // return err ? {} : data
+    // if (err) return {}; //res.status(400).send({ data: err });
+    // else res.json({ data: data });
+    // else return data;
     /*data = {
   Regions: [{
       Endpoint: "ec2.ap-south-1.amazonaws.com",
@@ -65,7 +68,7 @@ exports.getRegions = function(req, res) {
     }
   ]}*/
 
-  });
+  // });
 };
 
 // To list Ubuntu AMI which can be used for running instance
@@ -95,13 +98,25 @@ exports.getAMIs = function(req, res) {
       // { Name: 'architecture', Values: ['x86_64'] },
     ],
   };
-  ec2.describeImages(params, function(err, data) {
-    if (err) res.status(400).send({ data: err });
-    else res.json({
-      count: data.Images.length,
-      data: data,
-    });
-  });
+  return ec2.describeImages(params).promise();
+  //, function(err, data) {
+  //   if (err) res.status(400).send({ data: err });
+  //   else res.json({
+  //     count: data.Images.length,
+  //     data: data,
+  //   });
+  // });
+};
+
+//GET: To list all instances and their status
+exports.getInstances = function(req, res) {
+  return ec2.describeInstances({}).promise();
+  //   , function(err, data) {
+  //   if (err) {
+  //     console.log(err, err.stack); // an error occurred
+  //     res.status(400).send({ data: err });
+  //   } else res.status(200).send({ count: data.Reservations.length, data: data });
+  // });
 };
 
 const DEFAULT_AMI = 'ami-086a09d5b9fa35dc7';
@@ -145,21 +160,6 @@ exports.runInstance = function(req, res) {
     } else {
       res.status(200).send({ data: data });
     }
-  });
-};
-
-//GET: To list all instances and their status
-exports.getInstances = function(req, res) {
-  var params = {
-    // InstanceIds: [
-    //   "i-1234567890abcdef0"
-    // ]
-  };
-  ec2.describeInstances(params, function(err, data) {
-    if (err) {
-      console.log(err, err.stack); // an error occurred
-      res.status(400).send({ data: err });
-    } else res.status(200).send({ count: data.Reservations.length, data: data });
   });
 };
 

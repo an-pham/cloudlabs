@@ -4,9 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
-var s3Router = require('./routes/s3');
-var ec2Router = require('./routes/ec2');
-var cloudwatch = require('./routes/cloudwatch');
+var s3Router = require('./routes/api/s3');
+var ec2Router = require('./routes/api/ec2');
+var cloudwatch = require('./routes/api/cloudwatch');
 
 var app = express();
 
