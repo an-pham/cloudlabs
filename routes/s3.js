@@ -2,8 +2,7 @@ var express = require('express');
 var router = express.Router();
 var AWS = require('aws-sdk');
 var uuid = require('uuid');
-var multer = require('multer')
-var _ = require('underscore');
+var multer = require('multer');
 
 var app = express();
 var upload = multer({ dest: 'uploads/' });

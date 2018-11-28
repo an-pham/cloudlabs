@@ -84,8 +84,8 @@ router.get('/', function(req, res, next) {
     }
 });
 
-router.get('/ec2',function(req,res){
-    res.render('ec2');
+router.get('/ec2-dashboard', function(req, res, next) {
+    res.render('ec2-dashboard', {});
 });
 
 // GET bucket detail page

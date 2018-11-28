@@ -6,7 +6,7 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var s3Router = require('./routes/s3');
 var ec2Router = require('./routes/ec2');
-// var usersRouter = require('./routes/users');
+var cloudwatch = require('./routes/cloudwatch');
 
 var app = express();
 
@@ -25,8 +25,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // AnP: define routes here
 app.use('/', indexRouter);
 app.use('/api/s3', s3Router);
-app.use('/api/ec2',ec2Router);
-app.use('/ec2',indexRouter);
+
+app.use('/api/ec2', ec2Router);
+app.use('/api/cw', cloudwatch);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
