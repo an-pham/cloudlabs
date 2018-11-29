@@ -88,9 +88,10 @@ router.get('/', function(req, res, next) {
 router.get('/ec2-dashboard', function(req, res, next) {
   Promise.all([ec2Ctrl.getRegions(), ec2Ctrl.getAMIs(), ec2Ctrl.describeInstances()]).then(function(values) {
     res.render('ec2-dashboard', {
-      ec2Regions: values[0],
-      ec2AMIs: values[1],
-      ec2Instances: values[2]
+      ec2Regions: values[0].Regions,
+      ec2AMIs: values[1].Images,
+      ec2Instances: values[2],
+      currentRegion: ec2Ctrl.getCurrentRegion()
     });
   });
 
@@ -126,8 +127,6 @@ router.get('/buckets/:bucketName', function(req, res, next) {
 // CLOUDWATCH MANAGEMENT PAGE
 router.get('/cloudwatch', function(req, res, next) {
   Promise.all([cwCtrl.getIndex(), ec2Ctrl.describeInstances()]).then(function(values) {
-    console.log(values[0]);
-    console.log(values[1].Reservations);
     res.render('cloudwatch', {
       count: values[0].Metrics.length,
       allMetrics: values[0].Metrics.map(function(val, i) { return val.MetricName; }),

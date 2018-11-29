@@ -13,7 +13,6 @@ var ec2 = new AWS.EC2();
 
 // To list region names and their endpoints
 exports.getRegions = function(req, res) {
-  console.log(ec2);
   return ec2.describeRegions({}).promise();
 };
 
@@ -74,6 +73,7 @@ const DEFAULT_AMI = 'ami-086a09d5b9fa35dc7';
 exports.runInstance = function(req, res) {
   var imageId = req.body.imageId || DEFAULT_AMI;
   var numOfInstance = req.body.numOfInstance || 1;
+  var name = req.body.instanceName;
 
   // maximum is 5 instance
   var maxInstances = 5;
@@ -99,7 +99,7 @@ exports.runInstance = function(req, res) {
       ResourceType: "instance",
       Tags: [{
         Key: "Name",
-        Value: "amiri" + uuid.v4(),
+        Value: name + uuid.v4(),
       }]
     }]
   };
@@ -188,6 +188,10 @@ exports.changeRegion = function(req, res) {
 exports.list = function(req, res) {
   res.send("hi from ec2 controller list");
 };
+
+exports.getCurrentRegion = function () {
+  return app.get('globalRegion');
+}
 
 function setRegion() {
   AWS.config.update({ region: app.get('globalRegion') });

@@ -1,0 +1,117 @@
+<div class="row">
+  <div class="col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" class="">
+            Instances
+          </a>
+        </h4>
+      </div>
+      <div id="collapseTwo" class="panel-collapse collapse in" aria-expanded="true" style="">
+        <!-- /.panel-heading -->
+        <div class="panel-body">
+          <div class="loader"></div>
+          <div class="alert alert-success alert-dismissable" id="action-alert-success">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <span class="alert-content"></span>
+          </div>
+          <div class="alert alert-danger alert-dismissable" id="action-alert-error">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <span class="alert-content"></span>
+          </div>
+          <div class="row messages-result">
+            <div id="notification-placeholder">
+              <div class="alert alert-success alert-dismissable">Successfully done!</div>
+              <div class="alert alert-danger alert-dismissable">Something went wrong! Please try again</div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-lg-6">
+              <label for="ec2-region-inp" class="control-label">Region:</label>
+              <select id="ec2-region-inp" class="form-control">
+                <option value="us-east-2" <%if (currentRegion == 'us-east-2') {%>  selected  <%}%>>
+                  US East (Ohio)
+                </option>
+                <option value="us-east-1" <%if (currentRegion == 'us-east-1') {%>  selected  <%}%>>
+                  US East (N. Virginia)
+                </option>
+                <option value="us-west-1" <%if (currentRegion == 'us-west-1') {%>  selected  <%}%>>
+                  US West (N. California)
+                </option>
+                <option value="us-west-2" <%if (currentRegion == 'us-west-2') {%>  selected  <%}%>>
+                  US West (Oregon)
+                </option>
+                <option value="ap-south-1" <%if (currentRegion == 'ap-south-1') {%>  selected  <%}%>>
+                  Asia Pacific (Mumbai)
+                </option>
+                <option value="ap-northeast-2" <%if (currentRegion == 'ap-northeast-2') {%>  selected  <%}%>>
+                  Asia Pacific (Seoul)
+                </option>
+                <option value="ap-southeast-1" <%if (currentRegion == 'ap-southeast-1') {%>  selected  <%}%>>
+                  Asia Pacific (Singapore)
+                </option>
+                <option value="ap-southeast-2" <%if (currentRegion == 'ap-southeast-2') {%>  selected  <%}%>>
+                  Asia Pacific (Sydney)
+                </option>
+                <option value="ap-northeast-1" <%if (currentRegion == 'ap-northeast-1') {%>  selected  <%}%>>
+                  Asia Pacific (Tokyo)
+                </option>
+                <option value="ca-central-1" <%if (currentRegion == 'ca-central-1') {%>  selected  <%}%>>
+                  Canada (Central)
+                </option>
+                <option value="eu-central-1" <%if (currentRegion == 'eu-central-1') {%>  selected  <%}%> >
+                  EU (Frankfurt)
+                </option>
+                <option value="eu-west-1" <%if (currentRegion == 'eu-west-1') {%>  selected  <%}%>>
+                  EU (Ireland)
+                </option>
+                <option value="eu-west-2" <%if (currentRegion == 'eu-west-2') {%>  selected  <%}%>>
+                  EU (London)
+                </option>
+                <option value="eu-west-3" <%if (currentRegion == 'eu-west-3') {%>  selected  <%}%>>
+                  EU (Paris)
+                </option>
+                <option value="sa-east-1" <%if (currentRegion == 'sa-east-1') {%>  selected  <%}%> >
+                  South America (São Paulo)
+                </option>
+              </select>
+            </div>
+            <div class="col-lg-6">
+            	<label></label>
+              <button type="button" id="refresh-btn" class="btn btn-primary">Reload</button>
+            </div>
+          </div>
+          <div class="row" id="table-loader-wrapper">
+            <div class="loader"></div>
+          </div>
+          <table width="100%" class="table table-striped table-bordered table-hover" id="bucket-list">
+            <thead>
+              <tr role="row">
+                <th>#</th>
+                <th>Instance Name</th>
+                <th>Region</th>
+                <th>Type</th>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>
+                  Operations
+                  <i tabindex="0" class="fa fa-question-circle popover-dismiss" role="button" data-toggle="popover" data-trigger="focus" title="Delete a bucket" data-content="This will delete all objects inside bucket!" aria-hidden="true" data-placement="bottom">
+						<!-- <i class="fa fa-question-circle" aria-hidden="true"></i> -->
+                  </a>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="instances-table">
+              <!--  }  -->
+            </tbody>
+          </table>
+          <!-- /.table-responsive -->
+        </div>
+        <!-- /.panel-body -->
+      </div>
+    </div>
+    <!-- /.panel -->
+  </div>
+  <!-- /.col-lg-12 -->
+</div>

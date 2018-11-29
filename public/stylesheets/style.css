@@ -112,6 +112,14 @@ a {
   margin:20px;
 }
 
+#refresh-btn {
+  margin-top: 25px;
+}
+
+#table-loader-wrapper {
+  margin-left: calc(50% - 10px);
+  margin-top: 10px;
+}
 
 
 
