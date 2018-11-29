@@ -186,7 +186,12 @@
 			responsive: true,
 			columnDefs: [
 				{ "orderable": false, "targets": 4 }
-			]
+			],
+			"createdRow": function( row, data, dataIndex ) {
+				if ( data[5] == "stopped" ) {
+				  $(row).addClass( 'stopped' );
+				}
+			}
 		});
 
 		refreshData();
