@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var mongoclient = require('mongodb').MongoClient;
+var randomstring = require("randomstring");
+
 
 // ========= GET the list of all available tickets
 
@@ -32,7 +34,7 @@ router.get('/:id', function(req, res) {
 			return;
 		}
 
-		db.collection('Tickets').find({ _id: req.params.id }).toArray(function(err, docs) {
+		db.collection('Tickets').find({ id: req.params.id }).toArray(function(err, docs) {
 			if (err) res.status(400).send({ err: err });
 			else res.status(200).send({ data: docs, count: docs.length });
 		});
@@ -48,6 +50,10 @@ router.post('/', function(req, res) {
 	var category = req.body['category'];
 	var relatedFeature = req.body['feature'];
 	var department = req.body['department'];
+	var ticketId = randomstring.generate({
+        length: 6,
+        charset: 'abcdefghijklmnopqrstuvxyz1234567890'
+      }),
 
 	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
 		if (err) {
@@ -57,6 +63,7 @@ router.post('/', function(req, res) {
 
 		db.collection('Tickets', function(err, collection) {
 			collection.insert({
+				id: ticketId,
 				reporter: reporter,
 				title: title,
 				description: description,
