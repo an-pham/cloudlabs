@@ -43,7 +43,25 @@ router.get('/:id', function(req, res) {
 
 // ========== Create a new ticket objet ========
 router.post('/', function(req, res) {
+	var reporter = req.body['reporter'];
+	var description = req.body['description'];
+	var category = req.body['category'];
+	var relatedFeature = req.body['feature'];
+	var department = req.body['department'];
 
+	db.collection('Tickets', function(err, collection) {
+		collection.insert({
+			reporter: reporter,
+			description: description,
+			category: category,
+			relatedFeature: relatedFeature,
+			department: department
+		}, function(err, result) {
+			if (err) throw err;
+			res.status(200).send({ result: result.result, ops: result.ops });
+		});
+
+	});
 });
 
 
