@@ -8,64 +8,81 @@ router.get('/', function(req, res) {
 
 	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
 
-		if (err) throw err;
+		if (err) {
+			// throw err;
+			res.status(500).send({ err: err });
+			return;
+		}
 
 		//Write databse Insert/Update/Query code here..
 
-
 		db.collection('Tickets').find({}).toArray(function(err, docs) {
-			res.status(200).send({ data: docs });
+			res.status(200).send({ data: docs, count: docs.length });
 		});
 
-
-
-		// db.collection('Tickets', function(err, collection) {
-
-		// 	collection.insert({ id: 1, firstName: 'Steve', lastName: 'Jobs' });
-		// 	collection.insert({ id: 2, firstName: 'Bill', lastName: 'Gates' });
-		// 	collection.insert({ id: 3, firstName: 'James', lastName: 'Bond' });
-
-
-		// 	db.collection('Persons').count(function(err, count) {
-		// 		if (err) throw err;
-
-		// 		console.log('Total Rows: ' + count);
-		// 	});
-		// });
 	});
 
 });
 
 router.get('/:id', function(req, res) {
+	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+		if (err) {
+			// throw err;
+			res.status(500).send({ err: err });
+			return;
+		}
 
+		db.collection('Tickets').find({ id: req.params.id }).toArray(function(err, docs) {
+			if (err) res.status(400).send({ err: err });
+			else res.status(200).send({ data: docs, count: docs.length });
+		});
+	});
 
 });
 
 // ========== Create a new ticket objet ========
 router.post('/', function(req, res) {
 	var reporter = req.body['reporter'];
+	var title = req.body['title'];
 	var description = req.body['description'];
 	var category = req.body['category'];
 	var relatedFeature = req.body['feature'];
 	var department = req.body['department'];
 
-	db.collection('Tickets', function(err, collection) {
-		collection.insert({
-			reporter: reporter,
-			description: description,
-			category: category,
-			relatedFeature: relatedFeature,
-			department: department
-		}, function(err, result) {
-			if (err) throw err;
-			res.status(200).send({ result: result.result, ops: result.ops });
-		});
+	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+		if (err) {
+			res.status(500).send({ err: err });
+			return;
+		}
 
+		db.collection('Tickets', function(err, collection) {
+			collection.insert({
+				reporter: reporter,
+				title: title,
+				description: description,
+				category: category,
+				relatedFeature: relatedFeature,
+				department: department
+			}, function(err, result) {
+				if (err) res.status(500).send({ err: err });
+				else res.status(200).send({ result: result.result, ops: result.ops, count: result.result.length });
+			});
+
+		});
 	});
 });
 
 
 router.get('/search/:term', function(req, res) {
+	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+		if (err) throw err;
+
+		db.collection('Tickets').find({ $or: [{ title: req.params.term }, { description: req.params.term }] }).toArray(function(err, docs) {
+			if (err) res.status(400).send({ data: err });
+			else res.status(200).send({ data: docs, count: docs.length });
+		});
+	});
+
 
 });
 
