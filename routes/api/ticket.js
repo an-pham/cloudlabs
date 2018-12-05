@@ -69,7 +69,8 @@ router.post('/', function(req, res) {
 				description: description,
 				category: category,
 				relatedFeature: relatedFeature,
-				department: department
+				department: department,
+				createdAt: new Date
 			}, function(err, result) {
 				if (err) res.status(500).send({ err: err });
 				else res.status(200).send({ result: result.result, ops: result.ops, count: result.result.length });
