@@ -53,7 +53,7 @@ router.post('/', function(req, res) {
 	var ticketId = randomstring.generate({
         length: 6,
         charset: 'abcdefghijklmnopqrstuvxyz1234567890'
-      }),
+      });
 
 	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
 		if (err) {
