@@ -7,6 +7,7 @@ var indexRouter = require('./routes/index');
 var s3Router = require('./routes/api/s3');
 var ec2Router = require('./routes/api/ec2');
 var cloudwatch = require('./routes/api/cloudwatch');
+var ticketRouter = require('./routes/api/ticket');
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/s3', s3Router);
 
 app.use('/api/ec2', ec2Router);
 app.use('/api/cw', cloudwatch);
+app.use('/api/tickets', tickets);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
