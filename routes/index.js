@@ -142,12 +142,24 @@ router.get('/dbtest',function(req, res, next){
   var mongoclient = require('mongodb').MongoClient;
   mongoclient.connect("mongodb://database:27017/MyDb", function (err, db) {
    
-     if(err) {return "error";}
-     else {
-      return "success";
-     }
+     if(err) throw err;
+
 
      //Write databse Insert/Update/Query code here..
+        db.collection('Persons', function (err, collection) {
+        
+        collection.insert({ id: 1, firstName: 'Steve', lastName: 'Jobs' });
+        collection.insert({ id: 2, firstName: 'Bill', lastName: 'Gates' });
+        collection.insert({ id: 3, firstName: 'James', lastName: 'Bond' });
+        
+        
+        db.collection('Persons').count(function (err, count) {
+            if (err) throw err;
+            
+            console.log('Total Rows: ' + count);
+        });
+    });
+                
                 
 });
 
