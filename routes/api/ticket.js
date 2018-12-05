@@ -32,7 +32,7 @@ router.get('/:id', function(req, res) {
 			return;
 		}
 
-		db.collection('Tickets').find({ id: req.params.id }).toArray(function(err, docs) {
+		db.collection('Tickets').find({ _id: req.params.id }).toArray(function(err, docs) {
 			if (err) res.status(400).send({ err: err });
 			else res.status(200).send({ data: docs, count: docs.length });
 		});
@@ -76,8 +76,12 @@ router.post('/', function(req, res) {
 router.get('/search/:term', function(req, res) {
 	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
 		if (err) throw err;
+		var query = { $or: [
+			{ title: { $regex: ".*" + req.params.term + ".*" } },
+			{ description: { $regex: ".*" + req.params.term + ".*" } }
+		]};
 
-		db.collection('Tickets').find({ $or: [{ title: req.params.term }, { description: req.params.term }] }).toArray(function(err, docs) {
+		db.collection('Tickets').find(query).toArray(function(err, docs) {
 			if (err) res.status(400).send({ data: err });
 			else res.status(200).send({ data: docs, count: docs.length });
 		});
