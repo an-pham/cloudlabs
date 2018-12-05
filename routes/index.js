@@ -136,4 +136,21 @@ router.get('/cloudwatch', function(req, res, next) {
   });
 });
 
+
+// Test for database Connection
+router.get('/dbtest',function(req, res, next){
+  var mongoclient = require('mongodb').MongoClient;
+  mongoclient.connect("mongodb://database:27017/MyDb", function (err, db) {
+   
+     if(err) {return "error";}
+     else {
+      return "success";
+     }
+
+     //Write databse Insert/Update/Query code here..
+                
+});
+
+});
+
 module.exports = router;
