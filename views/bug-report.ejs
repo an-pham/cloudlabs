@@ -44,7 +44,7 @@
 								<div class="loader"></div>
 								<div class="col-lg-6">
 									<div class="input-group">
-										<input type="text" class="form-control" placeholder="Search for...">
+										<input type="text" id="search-inp" class="form-control" placeholder="Search for...">
 										<span class="input-group-btn">
         									<button class="btn btn-default" type="button" id="search-ticket-btn">Go!</button>
       									</span>
@@ -156,7 +156,7 @@
 
 		function loadSearchData(data) {
 			tbody = document.getElementById("search-results");
-			tbl = $('#search-list').DataTable({});
+			// tbl = $('#search-list').DataTable({});
 			tbl.clear();
 			tbl.draw();
 
