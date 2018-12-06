@@ -80,6 +80,8 @@
 	</div>
 	<script type="text/javascript">
 	$(document).ready(function() {
+		var searchTbl = $('#search-list').DataTable({});
+
 
 		$('#tickets-list').DataTable({
 			responsive: true,
@@ -156,12 +158,11 @@
 
 		function loadSearchData(data) {
 			tbody = document.getElementById("search-results");
-			// tbl = $('#search-list').DataTable({});
-			tbl.clear();
-			tbl.draw();
+			searchTbl.clear();
+			searchTbl.draw();
 
 			for (var i = data.length - 1; i >= 0; i--) {
-				tbl.row.add([data[i]['id'],
+				searchTbl.row.add([data[i]['id'],
 					data[i]['title'],
 					data[i]['description'],
 					data[i]['category'],
