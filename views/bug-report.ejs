@@ -39,6 +39,22 @@
 			responsive: true,
 		});
 
+		$(".load-ticket").on('click', function(e) {
+			var id = e.target.id;
+			var theurl = 'api/tickets/' + id + '/';
+			$.ajax({
+				url: theurl,
+				type: "GET",
+				success: function(result) {
+					e.target.closet('span').text(result.data[0].title + '[' + result.data[0].description + ']');
+				},
+				error: function(result) {
+					console.log("Creating error: " + result);
+				},
+				timeout: 8000
+			});
+		});
+
 		$("#new-ticket-btn").on('click', function(e) {
 			$('.loader').show();
 			var theurl = 'api/tickets';

@@ -28,7 +28,8 @@
               <% for(var i=0; i<data.length; i++) {%>
               <tr class="odd gradeX" role="row">
                 <td class="center">
-                  <%= data[i]["id"] %>
+                  <a href="" class="load-ticket" id="<%= data[i]["id"] %>"><%= data[i]["id"] %></a>
+                  <span></span>
                 </td>
                 <td class="center">
                   <%= data[i]["title"] %>
