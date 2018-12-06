@@ -1,0 +1,78 @@
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+			        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" class="">Bug Tickets</a>
+		        </h4>
+			</div>
+			<div id="collapseTwo" class="panel-collapse collapse in" aria-expanded="true" style="">
+				<!-- /.panel-heading -->
+				<div class="panel-body">
+					<div class="loader"></div>
+					<div class="alert alert-success alert-dismissable" id="action-alert-success">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<span class="alert-content">Ticket created successfully!</span>
+					</div>
+					<div class="alert alert-danger alert-dismissable" id="action-alert-error">
+						<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+						<span class="alert-content">Something wrong!</span>
+					</div>
+					<form>
+						<div class="form-group">
+							<label for="instance-name-inp" class="control-label">Title:</label>
+							<input type="text" class="form-control" id="title-inp">
+						</div>
+						<div class="form-group">
+							<label for="instance-name-inp" class="control-label">Description:</label>
+							<input type="text" class="form-control" id="desc-inp">
+						</div>
+						<div class="form-group">
+							<label for="instance-name-inp" class="control-label">Category:</label>
+							<select id="category-inp" class="form-control">
+								<option value="Product">Product</option>
+								<option value="Frontend">Frontend</option>
+								<option value="Backend">Backend</option>
+								<option value="Payment">Payment</option>
+								<option value="Shopping">Shopping</option>
+								<option value="UIUX">UI/UX</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="instance-name-inp" class="control-label">Feature:</label>
+							<select id="feature-inp" class="form-control">
+								<option value="Find a product">Find a product</option>
+								<option value="Search product">Search product</option>
+								<option value="Create new product">Create new product</option>
+								<option value="Assigning price">Assigning price</option>
+								<option value="Update price">Update price</option>
+								<option value="Update product name">Update product name</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="instance-name-inp" class="control-label">Responsible department:</label>
+							<select id="department-inp" class="form-control">
+								<option value="IT">IT</option>
+								<option value="Marketing">Marketing</option>
+								<option value="Accounting">Accounting</option>
+								<option value="Human Resources">Human Resources</option>
+								<option value="Product Manager">Product Manager</option>
+								<option value="Developers">Developers</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="instance-name-inp" class="control-label">Reporter:</label>
+							<input type="text" class="form-control" id="reporter-inp">
+						</div>
+						<div class="form-group">
+							<button type="button" id="new-ticket-btn" class="btn btn-primary">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- /.panel-body -->
+	</div>
+	<!-- /.panel -->
+</div>
+<!-- /.col-lg-12 -->

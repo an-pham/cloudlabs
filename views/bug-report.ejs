@@ -29,7 +29,9 @@
 					</div>
 				</div>
 			</div>
-			<!-- Upload Image View-->
+			<!-- Tickets View-->
+			<% include ./partials/new-ticket %>
+			<% include ./partials/ticket-table %>
 		</div>
 		<!-- /#page-wrapper -->
 	</div>
@@ -40,6 +42,34 @@
 			responsive: true,
 		});
 
+		$("#new-ticket-btn").on('click', function(e) {
+			$('.loader').show();
+			var theurl = 'api/tickets';
+			$.ajax({
+				url: theurl,
+				type: "POST",
+				data: {
+					reporter: $("#reporter-inp").val(),
+					title: $("#title-inp").val(),
+					description: $("#desc-inp").val(),
+					category: $("#category-inp option:selected").val(),
+					relatedFeature: $("#feature-inp option:selected").val(),
+					department: $("#department-inp option:selected").val()
+				},
+				success: function(result) {
+					$('.loader').hide();
+					$('.alert-success').show();
+					$('.alert-danger').hide();
+				},
+				error: function(result) {
+					$('.loader').hide();
+					$('.alert-success').hide();
+					$('.alert-danger').show();
+					console.log("Creating error: " + result);
+				},
+				timeout: 8000
+			});
+		});
 	});
 	</script>
 </body>
