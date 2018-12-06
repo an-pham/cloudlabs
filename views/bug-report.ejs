@@ -47,7 +47,8 @@
 				url: theurl,
 				type: "GET",
 				success: function(result) {
-					alert(result.data[0].title + '[' + result.data[0].description + ']');
+					console.log(result);
+					alert(" Loading data for ticket: " + result.data[0].id + "\n" + result.data[0].title + ' [ ' + result.data[0].description + ' ]');
 				},
 				error: function(result) {
 					console.log("Creating error: " + result);
@@ -57,7 +58,7 @@
 		});
 
 		$("#new-ticket-btn").on('click', function(e) {
-			$('.loader').show();
+			$('.new-ticket-wraper .loader').show();
 			var theurl = 'api/tickets';
 			$.ajax({
 				url: theurl,
@@ -71,19 +72,85 @@
 					department: $("#department-inp option:selected").val()
 				},
 				success: function(result) {
-					$('.loader').hide();
-					$('.alert-success').show();
-					$('.alert-danger').hide();
+					$('.new-ticket-wraper .loader').hide();
+					$('.new-ticket-wraper .alert-success').show();
+					$('.new-ticket-wraper .alert-danger').hide();
 				},
 				error: function(result) {
-					$('.loader').hide();
-					$('.alert-success').hide();
-					$('.alert-danger').show();
+					$('.new-ticket-wraper .loader').hide();
+					$('.new-ticket-wraper .alert-success').hide();
+					$('.new-ticket-wraper .alert-danger').show();
 					console.log("Creating error: " + result);
 				},
 				timeout: 8000
 			});
 		});
+
+		$("#search-ticket-btn").on('click', function(e) {
+			$('.search-wrapper .loader').show();
+			var theurl = 'api/tickets/search/' + $("#search-inp").val();
+			$.ajax({
+				url: theurl,
+				type: "GET",
+				success: function(result) {
+					$('.search-wrapper .loader').hide();
+					$('.search-wrapper .alert-success').show();
+					$('.search-wrapper .alert-danger').hide();
+					loadSearchData(result.data);
+				},
+				error: function(result) {
+					$('.search-wrapper .loader').hide();
+					$('.search-wrapper .alert-success').hide();
+					$('.search-wrapper .alert-danger').show();
+					console.log("Creating error: " + result);
+				},
+				timeout: 8000
+			});
+		});
+
+		function loadSearchData(data) {
+			tbody = document.getElementById("search-results");
+			tbl = $('search-list').DataTable({});
+			tbl.clear();
+			tbl.draw();
+
+			for (var i = data.length - 1; i >= 0; i--) {
+				tbl.row.add([data[i]['id'],
+					data[i]['title'],
+					data[i]['description'],
+					data[i]['category'],
+					data[i]['relatedFeature'],
+					data[i]['relatedFeature'],
+					`
+			<button type="button" id="` + instances[i].Instances[0].InstanceId + `"   class="btn start-btn-ec2 btn-success btn-circle"><i class="fa fa-play "></i></button>
+			<button type="button" id="` + instances[i].Instances[0].InstanceId + `"  class="btn stop-btn-ec2 btn-danger btn-circle"><i class="fa fa-pause"></i></button>
+
+					`
+					//instances[i]["Instances"]["0"]["Tags"]["0"]["Value"],
+					//instances[i]["Instances"],
+				]).draw();
+				$(".start-btn-ec2").on('click', function(e) {
+					startInstance(e);
+				});
+				$(".stop-btn-ec2").on('click', function(e) {
+					stopInstance(e);
+				});
+				//tbody.appendChild(document.createElement('tr',{"class":"d"}));
+
+				// tbody.innerHTML +=`<tr class="odd gradeX" role="row">`+
+				// `<td class="center">` + +`</td>`+
+				// `<td class="center">` + +`</td>`+
+				// `<td class="center">` + +`</td>`+
+				// `<td class="center">` + +`</td>`+
+				// `<td class="center">` + +`</td>`+
+				// `<td class="center">` + +`</td>`+
+				// `<td class="center">` + +`</td>`+
+
+				// `</tr>`;
+			}
+
+
+		}
 	});
 	</script>
 </body>
