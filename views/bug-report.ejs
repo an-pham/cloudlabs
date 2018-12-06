@@ -40,13 +40,14 @@
 		});
 
 		$(".load-ticket").on('click', function(e) {
+			e.preventDefault();
 			var id = e.target.id;
 			var theurl = 'api/tickets/' + id + '/';
 			$.ajax({
 				url: theurl,
 				type: "GET",
 				success: function(result) {
-					e.target.closet('span').text(result.data[0].title + '[' + result.data[0].description + ']');
+					alert(result.data[0].title + '[' + result.data[0].description + ']');
 				},
 				error: function(result) {
 					console.log("Creating error: " + result);
