@@ -29,6 +29,53 @@
 			<!-- Tickets View-->
 			<% include ./partials/new-ticket %>
 			<% include ./partials/tickets-table %>
+			<!-- Search View-->
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+			            		<a data-toggle="collapse" data-parent="#accordion" href="#collapse3" aria-expanded="false" class="">Search for tickets</a>
+			            	</h4>
+						</div>
+						<div id="collapse3" class="panel-collapse collapse in" aria-expanded="true" style="">
+							<!-- /.panel-heading -->
+							<div class="panel-body search-wrapper">
+								<div class="loader"></div>
+								<div class="col-lg-6">
+									<div class="input-group">
+										<input type="text" class="form-control" placeholder="Search for...">
+										<span class="input-group-btn">
+        									<!-- <button class="btn btn-default" type="button">Go!</button> -->
+        									<span id="search-ticket-btn" class="glyphicon glyphicon-search" aria-hidden="true"></span>
+      									</span>
+									</div><!-- /input-group -->
+								</div><!-- /.col-lg-6 -->
+								<table width="100%" class="table table-striped table-bordered table-hover" id="search-list">
+									<thead>
+										<tr role="row">
+											<th>#</th>
+											<th>Title</th>
+											<th>Description</th>
+											<th>Category</th>
+											<th>Related Feature</th>
+											<th>Department</th>
+											<th>Reported By</th>
+											<th>Created At</th>
+										</tr>
+									</thead>
+									<tbody id="search-results">
+									</tbody>
+								</table>
+								<!-- /.table-responsive -->
+							</div>
+						</div>
+					</div>
+					<!-- /.panel-body -->
+				</div>
+				<!-- /.panel -->
+			</div>
+			<!-- /.col-lg-12 -->
 		</div>
 		<!-- /#page-wrapper -->
 	</div>
@@ -110,7 +157,7 @@
 
 		function loadSearchData(data) {
 			tbody = document.getElementById("search-results");
-			tbl = $('search-list').DataTable({});
+			tbl = $('#search-list').DataTable({});
 			tbl.clear();
 			tbl.draw();
 
@@ -120,38 +167,14 @@
 					data[i]['description'],
 					data[i]['category'],
 					data[i]['relatedFeature'],
-					data[i]['relatedFeature'],
-					`
-			<button type="button" id="` + instances[i].Instances[0].InstanceId + `"   class="btn start-btn-ec2 btn-success btn-circle"><i class="fa fa-play "></i></button>
-			<button type="button" id="` + instances[i].Instances[0].InstanceId + `"  class="btn stop-btn-ec2 btn-danger btn-circle"><i class="fa fa-pause"></i></button>
-
-					`
-					//instances[i]["Instances"]["0"]["Tags"]["0"]["Value"],
-					//instances[i]["Instances"],
+					data[i]['department'],
+					data[i]['reporter'],
+					data[i]['createdAt']
 				]).draw();
-				$(".start-btn-ec2").on('click', function(e) {
-					startInstance(e);
-				});
-				$(".stop-btn-ec2").on('click', function(e) {
-					stopInstance(e);
-				});
-				//tbody.appendChild(document.createElement('tr',{"class":"d"}));
-
-				// tbody.innerHTML +=`<tr class="odd gradeX" role="row">`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-				// `<td class="center">` + +`</td>`+
-
-				// `</tr>`;
 			}
-
-
 		}
 	});
+
 	</script>
 </body>
 
