@@ -149,9 +149,8 @@ router.get('/bug-report', function(req, res, next) {
 	} else {
 		db.collection('Tickets').find({}).toArray(function(err, docs) {
 			res.render('bug-report', { data: docs });
-		}
+		});
 	}
-	});
 });
 
 
