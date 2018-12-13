@@ -138,38 +138,19 @@ router.get('/cloudwatch', function(req, res, next) {
 });
 
 router.get('/bug-report', function(req, res, next) {
-
-	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
-
-		if (!err) {
+	var db = app.get("dbConn");
+	if (!db) {
+		mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+			app.set("dbConn", db);
 			db.collection('Tickets').find({}).toArray(function(err, docs) {
 				res.render('bug-report', { data: docs });
-				// 	{
-				//     "data": [
-				//         {
-				//             "_id": "5c085558e24f4c002f1a0d19",
-				//             "reporter": "it's me",
-				//             "title": "ticket title",
-				//             "description": "this is bug report, your feature is hard to use",
-				//             "category": "frontend",
-				//             "relatedFeature": null,
-				//             "department": "IT"
-				//         },
-				//         {
-				//             "_id": "5c085a6ead48a9002f869e5f",
-				//             "id": "a5uvpg",
-				//             "reporter": "it's me again",
-				//             "title": "new ticket",
-				//             "description": "this is bug report, some feature is missing",
-				//             "category": "product",
-				//             "relatedFeature": null,
-				//             "department": "marketing"
-				//         }
-				//     ],
-				//     "count": 2
-				// }
 			});
+		});
+	} else {
+		db.collection('Tickets').find({}).toArray(function(err, docs) {
+			res.render('bug-report', { data: docs });
 		}
+	}
 	});
 });
 

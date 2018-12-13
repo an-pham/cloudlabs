@@ -2,13 +2,15 @@ var express = require('express');
 var router = express.Router();
 var mongoclient = require('mongodb').MongoClient;
 var randomstring = require("randomstring");
+var Q = require("q");
 
 
 // ========= GET the list of all available tickets
 
 router.get('/', function(req, res) {
 
-	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	conn().then(function(err, db) {
 
 		if (err) {
 			// throw err;
@@ -27,7 +29,8 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	conn().then(function(err, db) {
 		if (err) {
 			// throw err;
 			res.status(500).send({ err: err });
@@ -51,11 +54,12 @@ router.post('/', function(req, res) {
 	var relatedFeature = req.body['feature'];
 	var department = req.body['department'];
 	var ticketId = randomstring.generate({
-        length: 6,
-        charset: 'abcdefghijklmnopqrstuvxyz1234567890'
-      });
+		length: 6,
+		charset: 'abcdefghijklmnopqrstuvxyz1234567890'
+	});
 
-	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	conn().then(function(err, db) {
 		if (err) {
 			res.status(500).send({ err: err });
 			return;
@@ -82,20 +86,39 @@ router.post('/', function(req, res) {
 
 
 router.get('/search/:term', function(req, res) {
-	mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+	conn().then(function(err, db) {
 		if (err) throw err;
-		var query = { $or: [
-			{ title: { $regex: ".*" + req.params.term + ".*" } },
-			{ description: { $regex: ".*" + req.params.term + ".*" } }
-		]};
+		var query = {
+			$or: [
+				{ title: { $regex: ".*" + req.params.term + ".*" } },
+				{ description: { $regex: ".*" + req.params.term + ".*" } }
+			]
+		};
 
 		db.collection('Tickets').find(query).toArray(function(err, docs) {
 			if (err) res.status(400).send({ data: err });
 			else res.status(200).send({ data: docs, count: docs.length });
 		});
+
 	});
 
-
 });
+
+function conn() {
+	var deferred = Q.defer();
+	var db = app.get("dbConn");
+	if (!db) {
+		mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
+			app.set("dbConn", db);
+			deferred.resolve(err, db);
+		});
+		sleep;
+	} else {
+		deferred.resolve(null, db);
+	}
+
+	return deferred.promise;
+}
 
 module.exports = router;
