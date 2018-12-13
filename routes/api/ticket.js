@@ -3,7 +3,7 @@ var router = express.Router();
 var mongoclient = require('mongodb').MongoClient;
 var randomstring = require("randomstring");
 var Q = require("q");
-
+var app = express();
 
 // ========= GET the list of all available tickets
 
