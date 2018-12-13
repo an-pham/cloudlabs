@@ -111,6 +111,7 @@ function conn() {
 	if (!db) {
 		mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
 			app.set("dbConn", db);
+			console.log("New db open: " + db);
 			deferred.resolve(err, db);
 		});
 		sleep;
