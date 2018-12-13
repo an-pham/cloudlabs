@@ -10,34 +10,37 @@ var app = express();
 router.get('/', function(req, res) {
 
 	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
-	conn().then(function(err, db) {
+	conn('Tickets').then(function(collection) {
 
-		if (err) {
-			// throw err;
-			res.status(500).send({ err: err });
-			return;
-		}
+		// if (err) {
+		// 	// throw err;
+		// 	res.status(500).send({ err: err });
+		// 	return;
+		// }
 
 		//Write databse Insert/Update/Query code here..
 
-		db.collection('Tickets').find({}).toArray(function(err, docs) {
+		collection.find({}).toArray(function(err, docs) {
 			res.status(200).send({ data: docs, count: docs.length });
 		});
 
+	}).fail(function(err) {
+		// If Error accrued. 
+		console.log("Create connection error: " + err);
 	});
 
 });
 
 router.get('/:id', function(req, res) {
 	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
-	conn().then(function(err, db) {
-		if (err) {
-			// throw err;
-			res.status(500).send({ err: err });
-			return;
-		}
+	conn('Tickets').then(function(collection) {
+		// if (err) {
+		// 	// throw err;
+		// 	res.status(500).send({ err: err });
+		// 	return;
+		// }
 
-		db.collection('Tickets').find({ id: req.params.id }).toArray(function(err, docs) {
+		collection.find({ id: req.params.id }).toArray(function(err, docs) {
 			if (err) res.status(400).send({ err: err });
 			else res.status(200).send({ data: docs, count: docs.length });
 		});
@@ -59,36 +62,35 @@ router.post('/', function(req, res) {
 	});
 
 	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
-	conn().then(function(err, db) {
-		if (err) {
-			res.status(500).send({ err: err });
-			return;
-		}
+	conn('Tickets').then(function(collection) {
+		// if (err) {
+		// 	res.status(500).send({ err: err });
+		// 	return;
+		// }
 
-		db.collection('Tickets', function(err, collection) {
-			collection.insert({
-				id: ticketId,
-				reporter: reporter,
-				title: title,
-				description: description,
-				category: category,
-				relatedFeature: relatedFeature,
-				department: department,
-				createdAt: new Date
-			}, function(err, result) {
-				if (err) res.status(500).send({ err: err });
-				else res.status(200).send({ result: result.result, ops: result.ops, count: result.result.length });
-			});
-
+		// db.collection('Tickets', function(err, collection) {
+		collection.insert({
+			id: ticketId,
+			reporter: reporter,
+			title: title,
+			description: description,
+			category: category,
+			relatedFeature: relatedFeature,
+			department: department,
+			createdAt: new Date
+		}, function(err, result) {
+			if (err) res.status(500).send({ err: err });
+			else res.status(200).send({ result: result.result, ops: result.ops, count: result.result.length });
 		});
+		// });
 	});
 });
 
 
 router.get('/search/:term', function(req, res) {
 	// mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
-	conn().then(function(err, db) {
-		if (err) throw err;
+	conn('Tickets').then(function(collection) {
+		// if (err) throw err;
 		var query = {
 			$or: [
 				{ title: { $regex: ".*" + req.params.term + ".*" } },
@@ -96,26 +98,41 @@ router.get('/search/:term', function(req, res) {
 			]
 		};
 
-		db.collection('Tickets').find(query).toArray(function(err, docs) {
+		// db.collection('Tickets')
+
+		collection.find(query).toArray(function(err, docs) {
 			if (err) res.status(400).send({ data: err });
 			else res.status(200).send({ data: docs, count: docs.length });
 		});
 
+	}).fail(function(err) {
+		// If Error accrued. 
+		console.log("Create connection error: " + err);
 	});
 
 });
 
-function conn() {
+function conn(collectionName) {
 	var deferred = Q.defer();
+	var collection = app.get(collectionName);
 	var db = app.get("dbConn");
+
 	if (!db) {
 		mongoclient.connect("mongodb://database:27017/MyDb", function(err, db) {
-			app.set("dbConn", db);
-			console.log("New db open: " + db);
-			deferred.resolve(err, db);
+			if (err) {
+				deferred.reject(new Error(err));
+			} else {
+				collection = db.collection(collectionName);
+				app.set("dbConn", db);
+				app.set(collectionName, collection);
+	            deferred.resolve(collection);
+
+				// deferred.resolve(db.collection(collectionName));
+			}
 		});
 	} else {
-		deferred.resolve(null, db);
+		// var collection = db.collection(collectionName);
+		deferred.resolve(collection);
 	}
 
 	return deferred.promise;
