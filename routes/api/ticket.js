@@ -114,7 +114,6 @@ function conn() {
 			console.log("New db open: " + db);
 			deferred.resolve(err, db);
 		});
-		sleep;
 	} else {
 		deferred.resolve(null, db);
 	}
